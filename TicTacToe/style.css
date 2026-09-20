@@ -1,0 +1,88 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    padding: 1rem;
+}
+
+.game {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.board {
+    max-width: 600px;
+    height: 600px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    border: 2px solid black;
+}
+
+.saved-games {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    /* height: 100px; */
+    padding: 1rem;
+}
+
+.saved-games .board {
+    flex: 0 0 auto;
+    width: 100px;
+    height: 100px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    border: 2px solid black;
+    padding: 0;
+}
+
+.cell {
+    border: none;
+}
+
+.cell:nth-child(3n + 2) {
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+
+.cell:nth-child(n + 4) {
+    border-top: 1px solid black;
+}
+
+.retry-bttn {
+    border: none;
+    font-size: 1.5rem;
+    padding: 10px;
+    background-color: #0000006b;
+    border-radius: 10px;
+}
+
+.modal {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    left: calc(50% - 250px);
+    top: calc(50% - 250px);
+    background-color: #9b9b9c6b;
+    backdrop-filter: blur(4px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2%;
+}
+
+.hidden {
+    display: none;
+}

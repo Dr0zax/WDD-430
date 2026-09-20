@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Tic Tac Toe</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <header>
+            <h1>Tic Tac Toe</h1>
+        </header>
+        <main>
+            <div class="modal hidden" id="modal">
+                <p id="results"></p>
+                <button id="retry-bttn" class="retry-bttn">Retry?</button>
+            </div>
+            <div class="game">
+                <div id="board" class="board">
+                    <button class="cell cell-0">X</button>
+                    <button class="cell cell-1">X</button>
+                    <button class="cell cell-2">X</button>
+                    <button class="cell cell-3">X</button>
+                    <button class="cell cell-4">X</button>
+                    <button class="cell cell-5">X</button>
+                    <button class="cell cell-6">X</button>
+                    <button class="cell cell-7">X</button>
+                    <button class="cell cell-8">X</button>
+                </div>
+            </div>
+            <button id="save-bttn" class="save-bttn">Save game</button>
+            <h2>Saved Games</h2>
+            <div class="saved-games" id="saved-games"></div>
+        </main>
+        <footer></footer>
+        <script src="index.js"></script>
+    </body>
+</html>

@@ -1,0 +1,8 @@
+allowBuilds:
+  base64: true
+  compress-buffer: true
+  hiredis: true
+  iconv: true
+  pg: true
+  stacktrace: true
+  uriparser: true

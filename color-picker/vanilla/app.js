@@ -1,0 +1,8 @@
+const $ = (id) => document.getElementById(id);
+const state = { hex: '#FF7043', hue: 12, alpha: 100 };
+const clampHex = (value) => /^#[0-9a-f]{6}$/i.test(value) ? value.toUpperCase() : null;
+function rgb(hex){ return hex.slice(1).match(/.{2}/g).map((part)=>parseInt(part,16)); }
+function luminance([r,g,b]){ const c=[r,g,b].map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2] }
+function render(){ const [r,g,b]=rgb(state.hex); const alpha=state.alpha/100; $('preview').style.background=`rgba(${r},${g},${b},${alpha})`; $('preview-label').textContent=state.hex; $('hue').value=state.hue; $('alpha').value=state.alpha; $('hue-value').textContent=`${state.hue}°`; $('alpha-value').textContent=`${state.alpha}%`; $('hex').value=state.hex; $('rgb').textContent=`${r} · ${g} · ${b}`; $('alpha-readout').textContent=alpha.toFixed(2); const ratio=(Math.max(luminance([r,g,b]),luminance([37,44,43]))+.05)/(Math.min(luminance([r,g,b]),luminance([37,44,43]))+.05); $('contrast').textContent=`${ratio.toFixed(2)} : 1` }
+function setHex(value){const next=clampHex(value);if(next){state.hex=next;render()}}
+$('hue').addEventListener('input',(event)=>{state.hue=event.target.value;render()});$('alpha').addEventListener('input',(event)=>{state.alpha=event.target.value;render()});$('hex').addEventListener('change',(event)=>setHex(event.target.value));document.querySelectorAll('[data-color]').forEach((button)=>button.addEventListener('click',()=>setHex(button.dataset.color)));$('copy').addEventListener('click',async()=>{await navigator.clipboard?.writeText(state.hex);$('copy').firstChild.textContent='Copied ';setTimeout(()=>{$('copy').firstChild.textContent='Copy '},1100)});render();

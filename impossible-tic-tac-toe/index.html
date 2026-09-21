@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A polished, impossible-to-beat tic-tac-toe game built with vanilla HTML, CSS, and JavaScript.">
+  <title>Unbeatable Tic-Tac-Toe</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game-shell">
+    <header class="topbar">
+      <a class="brand" href="." aria-label="Unbeatable Tic-Tac-Toe home">
+        <span class="brand-mark" aria-hidden="true"><span>×</span><span>○</span></span>
+        <span>Unbeatable<br><strong>Tic-Tac-Toe</strong></span>
+      </a>
+      <button class="icon-button" id="sound-toggle" type="button" aria-pressed="true" aria-label="Turn sound off" title="Toggle sound">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Zm6.5 3.5a5 5 0 0 1 0 7M19 5.5a9 9 0 0 1 0 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </header>
+
+    <section class="hero" aria-labelledby="page-title">
+      <div class="eyebrow"><span class="status-dot"></span> The perfect opponent</div>
+      <h1 id="page-title">Can you outsmart<br><em>the machine?</em></h1>
+      <p>Every move is calculated. Every mistake is costly.<br>Good luck — you’ll need it.</p>
+    </section>
+
+    <section class="game-area" aria-label="Tic-tac-toe game">
+      <div class="scoreboard" aria-label="Scoreboard">
+        <div class="player-card is-you">
+          <span class="player-symbol x-symbol">×</span>
+          <span><small>You</small><strong id="player-score">0</strong></span>
+        </div>
+        <div class="round-status" id="round-status" aria-live="polite">Your turn</div>
+        <div class="player-card is-machine">
+          <span><small>Machine</small><strong id="machine-score">0</strong></span>
+          <span class="player-symbol o-symbol">○</span>
+        </div>
+      </div>
+
+      <div class="board-wrap">
+        <div class="thinking-label" id="thinking-label" aria-hidden="true"><span></span><span></span><span></span> thinking</div>
+        <div class="board" id="board" role="grid" aria-label="Tic-tac-toe board">
+          <button class="cell" type="button" data-index="0" role="gridcell" aria-label="Top left, empty"></button>
+          <button class="cell" type="button" data-index="1" role="gridcell" aria-label="Top center, empty"></button>
+          <button class="cell" type="button" data-index="2" role="gridcell" aria-label="Top right, empty"></button>
+          <button class="cell" type="button" data-index="3" role="gridcell" aria-label="Middle left, empty"></button>
+          <button class="cell" type="button" data-index="4" role="gridcell" aria-label="Center, empty"></button>
+          <button class="cell" type="button" data-index="5" role="gridcell" aria-label="Middle right, empty"></button>
+          <button class="cell" type="button" data-index="6" role="gridcell" aria-label="Bottom left, empty"></button>
+          <button class="cell" type="button" data-index="7" role="gridcell" aria-label="Bottom center, empty"></button>
+          <button class="cell" type="button" data-index="8" role="gridcell" aria-label="Bottom right, empty"></button>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="primary-button" id="new-game" type="button">New game <span>↗</span></button>
+        <button class="text-button" id="reset-score" type="button">Reset score</button>
+      </div>
+
+      <div class="tip"><span>✦</span> Tip: The center is powerful. But the corners are tricky.</div>
+    </section>
+
+    <footer><span>VANILLA JS</span><i></i><span>NO SHORTCUTS</span><i></i><span>BUILT TO BEAT YOU</span></footer>
+  </main>
+  <div class="result-overlay" id="result-overlay" hidden>
+    <div class="result-card" role="dialog" aria-modal="true" aria-labelledby="result-title">
+      <span class="result-kicker">Round complete</span>
+      <h2 id="result-title">You won!</h2>
+      <p id="result-message">That was unexpected.</p>
+      <button class="primary-button" id="play-again" type="button">Play again <span>↗</span></button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

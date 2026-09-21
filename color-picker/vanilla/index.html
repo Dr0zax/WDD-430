@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A polished color picker built with vanilla JavaScript." />
+  <title>Color Lab · Vanilla</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar"><a class="brand" href="."><span class="brand-mark">◒</span><span>Color<br><strong>Lab</strong></span></a><span class="framework">VANILLA JS</span></header>
+    <section class="intro"><p class="eyebrow"><span></span> Color instrument 01</p><h1>Find your<br><em>exact shade.</em></h1><p>Dial in a color, tune its transparency, and take it with you.</p></section>
+    <section class="picker" aria-label="Color picker">
+      <div class="preview" id="preview"><span id="preview-label">#FF7043</span></div>
+      <div class="controls">
+        <label class="control-label" for="hue">Hue <output id="hue-value">12°</output></label><input id="hue" type="range" min="0" max="360" value="12" />
+        <label class="control-label" for="alpha">Opacity <output id="alpha-value">100%</output></label><input id="alpha" type="range" min="0" max="100" value="100" />
+        <div class="field-row"><label class="field"><span>HEX</span><input id="hex" value="#FF7043" maxlength="7" spellcheck="false" /></label><button id="copy" class="copy" type="button">Copy <span>↗</span></button></div>
+      </div>
+      <div class="readouts"><div><span>RGB</span><strong id="rgb">255 · 112 · 67</strong></div><div><span>ALPHA</span><strong id="alpha-readout">1.00</strong></div><div><span>CONTRAST</span><strong id="contrast">4.03 : 1</strong></div></div>
+      <div class="swatches" aria-label="Quick colors"><span>QUICK COLORS</span><button data-color="#FF7043" style="--swatch:#FF7043" aria-label="Coral"></button><button data-color="#B7D548" style="--swatch:#B7D548" aria-label="Lime"></button><button data-color="#6C63FF" style="--swatch:#6C63FF" aria-label="Indigo"></button><button data-color="#33B5A4" style="--swatch:#33B5A4" aria-label="Teal"></button><button data-color="#F5C451" style="--swatch:#F5C451" aria-label="Sun"></button></div>
+    </section>
+    <footer><span>MADE FOR MAKERS</span><i></i><span>01 / 04</span></footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

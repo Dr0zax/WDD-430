@@ -1,0 +1,3 @@
+interface:
+  display_name: "Quality Assurance"
+  short_description: "Write fast, independent unit and E2E tests"

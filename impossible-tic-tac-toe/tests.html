@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic-Tac-Toe Test Suite</title>
+  <style>
+    :root { color-scheme: dark; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    body { margin: 0; padding: 32px; background: #202625; color: #f5f5ef; }
+    main { max-width: 820px; margin: auto; }
+    h1 { color: #d6fa5b; font: 700 34px/1.1 system-ui, sans-serif; }
+    p { color: #aab4af; }
+    .summary { display: flex; gap: 20px; padding: 18px; margin: 25px 0; background: #2b3331; border-left: 4px solid #d6fa5b; }
+    .summary strong { font-size: 24px; }.summary .failed { color: #ff9472; }.summary .passed { color: #d6fa5b; }
+    #results { display: grid; gap: 8px; list-style: none; padding: 0; }
+    li { padding: 12px 14px; background: #2b3331; border-radius: 3px; }.pass { color: #d6fa5b; }.fail { color: #ff9472; }
+    code { color: #f5c6a6; }.details { display:block; margin-top:6px; color:#ff9472; font-size:12px; white-space:pre-wrap; }
+    iframe { position: absolute; width: 1px; height: 1px; border: 0; opacity: 0; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Tic-Tac-Toe test suite</h1>
+    <p>Framework-free browser tests for the game logic and core interactions.</p>
+    <div class="summary" aria-live="polite"><strong id="count">Running…</strong><span id="duration"></span></div>
+    <ol id="results"></ol>
+    <iframe id="app-frame" title="Test instance of the game"></iframe>
+  </main>
+  <script src="tests.js"></script>
+</body>
+</html>

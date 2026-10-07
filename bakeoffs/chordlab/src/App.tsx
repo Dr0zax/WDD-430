@@ -1,8 +1,7 @@
 import './index.css'
-import PianoKeyboard from './components/PianoKeyboard'
+import { PianoKeyboard } from './components/PianoKeyboard'
 
 function App() {
-  
 
   return (
     <>
@@ -21,7 +20,16 @@ function App() {
           </nav>
         </header>
         <main>
-          <PianoKeyboard></PianoKeyboard>
+          <div className='overflow-x-auto rounded-lg p-2'>
+
+          <PianoKeyboard
+            startMidi={36}
+            keyCount={36}
+            onKeyPress={(midi) => {
+              console.log(midi);
+            }}
+            ></PianoKeyboard>
+          </div>
         </main>
       </div>
     </>

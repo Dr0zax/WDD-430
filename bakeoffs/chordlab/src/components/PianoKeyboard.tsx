@@ -29,13 +29,9 @@ export function PianoKeyboard({startMidi = 48, keyCount = 24, onKeyPress}: Keybo
     const whiteKeys = keys.filter((key)=> !key.isBlack);
     const whiteKeyWidth = 100 / whiteKeys.length;
 
-    let whiteIndex = 0;
-
     return (
     <div className="relative flex h-48 min-w-max overflow-visible">
       {whiteKeys.map((key) => {
-        whiteIndex++;
-
         return (
           <button
             key={key.midi}

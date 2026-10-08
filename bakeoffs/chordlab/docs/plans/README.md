@@ -1,48 +1,49 @@
-# ChordLab Two Week MVP
+# ChordLab Feature Plans
 
-The manageable two-week target is one complete local workflow: choose a key and scale, explore its chords, build a progression, and hear it. Keep the first release single-user and in-memory; defer accounts, persistence, advanced theory, and hardware/file integrations.
+This directory contains the focused implementation plans for the ChordLab MVP and its optional piano/audio extensions.
 
 ## Recommended implementation order
 
-| Order | Feature ID | Depends on | Why this order |
-|---:|---|---|---|
-| 1 | F1 | None | Establishes the existing app shell, shared UI states, API boundary, and test baseline. |
-| 2 | F2 | F1 | Provides the note, scale, chord, and progression rules used by every MVP feature. |
-| 3 | F4 | F2 | Lets the user choose the musical context for exploration. |
-| 4 | F5 | F2, F4 | Shows the diatonic chords that can be added to a progression. |
-| 5 | F7 | F2 | Supports direct chord entry through the on-screen piano. |
-| 6 | F8 | F5, F7 | Connects discovered and entered chords into one editable progression. |
-| 7 | F9 | F2, F8 | Completes the core feedback loop by playing the chord progression. |
+| Order | Feature ID | Feature | Depends on | Why this order |
+| --- | --- | --- | --- | --- |
+| 1 | F1.1 | Responsive foundation and validation | none | Establishes the shared layout, mobile behavior, error handling, and validation patterns used by every other feature. |
+| 2 | F1.2 | User authentication | F1.1 | Completes the required sign-up, log-in, and log-out workflow while the shared form patterns are fresh. |
+| 3 | F1.3 | Key, scale, and chord explorer | F1.1 | Delivers the first meaningful music workflow and supplies the chord data needed by the progression builder. |
+| 4 | F1.4 | Progression builder | F1.1, F1.3 | Delivers the main project outcome: arranging compatible chords into a progression. |
+| 5 | F1.5 | Interactive piano interface | F1.1 | Adds an alternate note-input method after the main chord-selection workflow is stable. |
+| 6 | F1.6 | Chord audio playback | F1.1, F1.5 | Reuses the piano’s selected-note model and introduces the shared browser audio service. |
+| 7 | F1.7 | Progression audio playback | F1.4, F1.6 | Builds on the completed progression model and chord playback service. |
 
-## Two-week delivery target
+## Dependency map
 
-Plan for roughly ten implementation days plus four days for integration, testing, accessibility, and bug fixes:
+| Feature | Blocks | Dependency reason |
+| --- | --- | --- |
+| F1.1 Responsive foundation and validation | F1.2, F1.3, F1.4, F1.5, F1.6, F1.7 | Provides responsive layout, shared errors, validation, focus handling, and status patterns. |
+| F1.2 User authentication | None in the current MVP | Required for the project minimum, but no saved-data feature is currently in scope. |
+| F1.3 Key, scale, and chord explorer | F1.4 | Supplies the valid chord choices used to build a progression. |
+| F1.4 Progression builder | F1.7 | Supplies the ordered progression and timing data for progression playback. |
+| F1.5 Interactive piano interface | F1.6 | Supplies selected-note input for single-chord playback. |
+| F1.6 Chord audio playback | F1.7 | Supplies the voice lifecycle and audio scheduling used by progression playback. |
+| F1.7 Progression audio playback | None | Final extension in the current dependency chain. |
 
-- Days 1–2: F1 foundation and F2 domain rules.
-- Days 3–4: F4 key/scale selection and F5 diatonic chord display.
-- Days 5–7: F7 piano input and F8 progression workspace.
-- Days 8–9: F9 simple chord/progression playback.
-- Days 10–14: integration, responsive behavior, accessibility, test coverage, and polish.
+## First feature to implement
 
-## MVP boundaries
+Implement **F1.1 Responsive Foundation and Validation** first. It is the only shared foundation feature and reduces rework across authentication, the chord explorer, the progression builder, and the piano/audio interfaces. It also directly satisfies the responsive-interface and basic error-handling requirements before feature-specific work begins.
 
-Include:
+After F1.1, the highest-value path is F1.3 → F1.4 because it delivers the core ChordLab idea. F1.2 can be implemented in parallel if the backend work is separated from the music UI.
 
-- Major scales and basic triads only.
-- One Build page with a key/scale selector, chord list, piano input, progression list, and play/stop controls.
-- In-memory state; refreshing the page may clear the current progression.
-- Simple browser audio using the smallest reliable implementation.
+## Risks that could delay multiple features
 
-Defer until after the MVP:
+| Risk | Features affected | Mitigation |
+| --- | --- | --- |
+| Responsive layout decisions are delayed | F1.2–F1.7 | Decide the mobile layout, breakpoint, and panel stacking rules in F1.1. |
+| Validation and error-state patterns are inconsistent | F1.2–F1.7 | Create shared form, status, and error components before feature work branches. |
+| Authentication storage or session setup is unavailable | F1.2 and any future saved-data work | Confirm the course deployment database and session approach early; keep the current MVP music workflow local if necessary. |
+| Music data and chord derivation rules are not defined | F1.3, F1.4, F1.5, F1.6, F1.7 | Limit the MVP to documented major and natural-minor triads with deterministic note/interval rules. |
+| Browser audio behavior differs across devices | F1.6, F1.7 | Use a tested audio abstraction, initialize from user gestures, and provide a visual fallback/error state. |
+| Piano interaction expands into MIDI or advanced voicing work | F1.5–F1.7 | Keep the MVP to clickable keyboard note selection; defer external MIDI and voicing discovery. |
 
-- F3 user accounts and F12 saved progressions.
-- F6 piano/guitar voicing diagrams.
-- F10 next-chord suggestions and F11 genre-aware generation.
-- F13 MIDI controller input, F14 advanced jazz harmony, and F15 MIDI-file analysis.
+## Scope guidance
 
-## Scope guardrails
+For a two-week delivery, treat F1.1–F1.4 as the committed MVP. Treat F1.5–F1.7 as stretch features unless the core workflow is already complete and tested.
 
-- Do not add a backend unless the browser-only MVP cannot meet a requirement.
-- Do not support minor-scale variants, seventh chords, alternate tunings, or genre rules in this slice.
-- Do not add drag-and-drop unless there is time after keyboard-accessible reorder controls work.
-- Treat playback as a simple preview, not a sequencer, recorder, or export system.

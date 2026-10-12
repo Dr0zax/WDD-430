@@ -30,15 +30,16 @@ export function PianoKeyboard({startMidi = 48, keyCount = 24, onKeyPress}: Keybo
     const whiteKeyWidth = 100 / whiteKeys.length;
 
     return (
-    <div className="relative flex h-48 min-w-max overflow-visible">
-      {whiteKeys.map((key) => {
+    <div className="piano border border-zinc-800 rounded-2xl" role="group" aria-label="Piano keyboard">
+      {whiteKeys.map((key) => { 
         return (
           <button
             key={key.midi}
             type="button"
             onClick={() => onKeyPress?.(key.midi)}
-            className="relative h-full border border-zinc-800 bg-white
-                       transition-colors hover:bg-gray-200"
+            aria-label={`${key.note} (${key.midi})`}
+            className="piano-white-key relative h-full bg-white
+                       transition-colors not-first:border-l border-zinc-500 hover:bg-gray-200"
             style={{ width: `${whiteKeyWidth}%` }}
           >
             <span className="absolute bottom-2 left-0 right-0 text-xs text-zinc-500">
@@ -62,7 +63,8 @@ export function PianoKeyboard({startMidi = 48, keyCount = 24, onKeyPress}: Keybo
             key={key.midi}
             type="button"
             onClick={() => onKeyPress?.(key.midi)}
-            className="absolute top-0 z-10 h-28 -translate-x-1/2
+            aria-label={`${key.note} sharp (${key.midi})`}
+            className="piano-black-key absolute top-0 z-10 h-28 -translate-x-1/2
                        rounded-b-md border border-black bg-zinc-900
                         hover:bg-zinc-700 active:bg-zinc-500"
             style={{

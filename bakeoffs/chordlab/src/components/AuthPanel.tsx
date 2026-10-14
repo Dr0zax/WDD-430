@@ -4,6 +4,7 @@ import { SubmitEvent, useEffect, useRef, useState } from 'react'
 import { FieldError } from './ui/FieldError'
 import { StatusMessage } from './ui/StatusMessage'
 import { parseAuthInput } from '../lib/auth/client-validation'
+import { redirect, RedirectType } from 'next/navigation'
 
 type User = { email: string; displayName: string }
 
@@ -62,33 +63,10 @@ export function AuthPanel() {
     }
   }
 
-  async function handleLogout() {
-    setIsSubmitting(true)
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' })
-      setUser(null)
-      setEmail('')
-      setPassword('')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
   if (isLoading) return <section className="panel auth-panel" aria-busy="true"><p>Checking your session…</p></section>
 
   if (user) {
-    return (
-      <section className="panel auth-panel" id="registration" aria-labelledby="account-heading">
-        <div>
-          <p className="eyebrow">Your account</p>
-          <h2 id="account-heading">Welcome, {user.displayName}</h2>
-          <p className="panel-copy">Signed in as {user.email}.</p>
-        </div>
-        <button className="secondary-button" type="button" onClick={handleLogout} disabled={isSubmitting}>
-          {isSubmitting ? 'Signing out…' : 'Log out'}
-        </button>
-      </section>
-    )
+    redirect("/", RedirectType.push);
   }
 
   return (

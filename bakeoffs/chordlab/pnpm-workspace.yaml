@@ -1,5 +1,6 @@
 allowBuilds:
-  unrs-resolver: set this to true or false
+  bcrypt: true
+  unrs-resolver: true
 
 onlyBuiltDependencies:
   - bcrypt

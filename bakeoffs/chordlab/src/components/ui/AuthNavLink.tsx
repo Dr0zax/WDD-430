@@ -34,14 +34,14 @@ export function AuthNavLink() {
         type="button"
         onClick={handleSignOut}
       >
-        Sign Out
+        Log Out
       </button>
     )
   }
 
   return (
     <a className="nav-link" href="/auth">
-      Sign In
+      Log In
     </a>
   )
 }

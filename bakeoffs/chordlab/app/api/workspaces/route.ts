@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getAuthDatabase } from '../../../src/lib/auth/config'
 import { getCurrentUser } from '../../../src/lib/auth/session'
+import { isProgression } from '../../../src/lib/progression'
 
 export async function GET() {
   try {
@@ -11,9 +12,9 @@ export async function GET() {
 
     const { data, error } = await getAuthDatabase()
       .from('workspaces')
-      .select('id, name, created_at')
+      .select('id, name, progression, created_at, updated_at')
       .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
+      .order('updated_at', { ascending: false })
 
     if (error) {
       return NextResponse.json({ error: 'Unable to load workspaces.' }, { status: 500 })
@@ -26,10 +27,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  let body: { name?: unknown }
+  let body: { name?: unknown; progression?: unknown }
 
   try {
-    body = await request.json() as { name?: unknown }
+    body = await request.json() as { name?: unknown; progression?: unknown }
   } catch {
     return NextResponse.json({ error: 'Request body must be valid JSON.' }, { status: 400 })
   }
@@ -44,6 +45,10 @@ export async function POST(request: Request) {
       )
     }
 
+    if (!isProgression(body.progression)) {
+      return NextResponse.json({ error: 'A valid progression is required.' }, { status: 400 })
+    }
+
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -51,8 +56,8 @@ export async function POST(request: Request) {
 
     const { data, error } = await getAuthDatabase()
       .from('workspaces')
-      .insert({ name, user_id: user.id })
-      .select('id, name, created_at')
+      .insert({ name, user_id: user.id, progression: body.progression })
+      .select('id, name, progression, created_at, updated_at')
       .single()
 
     if (error) {

@@ -1,14 +1,12 @@
+import Link from "next/link";
 import { AuthNavLink } from "./ui/AuthNavLink";
 
 export function NavBar() {
     return (
         <nav className="main-nav" aria-label="Main navigation">
-            <a className="nav-link" href="/">
+            <Link className="nav-link" href="/">
                 Home
-            </a>
-            <a className="nav-link" href="/workspaces">
-                Workspaces
-            </a>
+            </Link>
             <AuthNavLink />
         </nav>
     );

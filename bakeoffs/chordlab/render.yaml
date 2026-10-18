@@ -1,11 +1,20 @@
 services:
-- type: web
-  name: next-js
-  runtime: node
-  plan: starter
-  buildCommand: yarn; yarn build
-  startCommand: yarn start
-  autoDeploy: false
-  envVars:
-  - key: NODE_ENV
-    value: production
+  - type: web
+    name: chordlab
+    runtime: node
+    plan: free
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true

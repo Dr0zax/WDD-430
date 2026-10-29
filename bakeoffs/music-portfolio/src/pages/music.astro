@@ -1,0 +1,48 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Music Catalog | Drozax Music" description="Browse Drozax music releases, tracks, genres, and listening links.">
+    <section aria-labelledby="music-heading">
+        <header>
+            <h1 id="music-heading">Music catalog</h1>
+            <p>Listen to releases, singles, demos, and soundtracks by Drozax.</p>
+        </header>
+
+        <form method="get" aria-label="Filter music catalog">
+            <label for="music-search">Search releases</label>
+            <input id="music-search" name="search" type="search" placeholder="Search by title or genre" />
+
+            <label for="release-type">Release type</label>
+            <select id="release-type" name="release_type">
+                <option value="">All release types</option>
+                <option value="album">Album</option>
+                <option value="ep">EP</option>
+                <option value="single">Single</option>
+                <option value="soundtrack">Soundtrack</option>
+                <option value="demo">Demo</option>
+            </select>
+
+            <label for="music-sort">Sort by</label>
+            <select id="music-sort" name="sort">
+                <option value="newest">Release date, newest first</option>
+                <option value="oldest">Release date, oldest first</option>
+                <option value="title">Title</option>
+            </select>
+            <button type="submit">Apply filters</button>
+        </form>
+    </section>
+
+    <section aria-labelledby="releases-heading">
+        <h2 id="releases-heading">Releases</h2>
+        <div id="release-list">
+            <article>
+                <img src="/images/release-placeholder.jpg" alt="Cover artwork placeholder for a music release" />
+                <h3>Release title</h3>
+                <p><time datetime="2026-01-01">Release date</time> · Release type · Genre</p>
+                <p>Release description will be loaded from the database.</p>
+                <a href="/music/release-slug">View release details</a>
+            </article>
+        </div>
+    </section>
+</Layout>

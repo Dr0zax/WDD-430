@@ -1,5 +1,16 @@
 ---
 import NavBar from "../components/NavBar.astro";
+import Footer  from "../components/Footer.astro";
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = "Drozax Music",
+	description = "The music portfolio of Drozax, a chillsynth and chillwave artist.",
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -10,21 +21,18 @@ import NavBar from "../components/NavBar.astro";
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Drozax Music</title>
+		<meta name="description" content={description} />
+		<title>{title}</title>
 	</head>
-	<header>
-		<NavBar />
-	</header>
 	<body>
-		<slot />
+		<header>
+			<NavBar />
+		</header>
+		<main>
+			<slot />
+		</main>
+		<footer>
+			<Footer />
+		</footer>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

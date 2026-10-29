@@ -1,0 +1,45 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Gear | Drozax Music" description="Explore the instruments, equipment, software, and studio tools used by Drozax.">
+    <section aria-labelledby="gear-heading">
+        <header>
+            <h1 id="gear-heading">Gear</h1>
+            <p>Instruments, studio hardware, software, and tools used in the Drozax studio.</p>
+        </header>
+
+        <form method="get" aria-label="Search gear inventory">
+            <label for="gear-search">Search gear</label>
+            <input id="gear-search" name="search" type="search" placeholder="Search by name, maker, or model" />
+
+            <label for="gear-category">Category</label>
+            <select id="gear-category" name="category">
+                <option value="">All categories</option>
+                <option value="instruments">Instruments</option>
+                <option value="microphones">Microphones</option>
+                <option value="hardware">Studio hardware</option>
+                <option value="effects">Effects and pedals</option>
+                <option value="monitoring">Monitoring</option>
+                <option value="computers">Computers and interfaces</option>
+                <option value="software">Software</option>
+                <option value="accessories">Accessories</option>
+            </select>
+            <button type="submit">Search inventory</button>
+        </form>
+    </section>
+
+    <section aria-labelledby="inventory-heading">
+        <h2 id="inventory-heading">Studio inventory</h2>
+        <div id="gear-list">
+            <article>
+                <img src="/images/gear-placeholder.jpg" alt="Gear item placeholder" />
+                <h3>Gear item name</h3>
+                <p>Category · Manufacturer · Model</p>
+                <p>Gear description and personal usage notes will be loaded from the database.</p>
+                <p>Status: Owned</p>
+                <a href="/gear/item-slug">View gear details</a>
+            </article>
+        </div>
+    </section>
+</Layout>

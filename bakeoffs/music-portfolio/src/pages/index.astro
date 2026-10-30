@@ -1,5 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import FeaturedRelease from '../components/FeaturedRelease.astro';
+import { createServerClient } from '../db/supabase';
+
+const supabase = createServerClient();
+const { data: featured_release, error } = await supabase.from("music_entries").select();
+
+
+
 ---
 
 <Layout title="Drozax Music | Chillsynth and Chillwave">
@@ -7,28 +15,26 @@ import Layout from '../layouts/Layout.astro';
         <header>
             <p>Drozax Music</p>
             <h1 id="welcome-heading">Chillsynth and chillwave</h1>
-            <p>Atmospheric electronic music, studio experiments, and sounds from the edge of the night.</p>
         </header>
 
         <figure>
-            <img src="/images/hero-placeholder.jpg" alt="Abstract artwork representing Drozax music" />
-            <figcaption>Welcome to the Drozax music portfolio.</figcaption>
+            <!-- <img src="/images/hero.jpg" alt="Abstract artwork representing Drozax music" /> -->
+            <figcaption>Welcome to my portfolio.</figcaption>
         </figure>
     </section>
 
     <section aria-labelledby="featured-heading">
         <h2 id="featured-heading">Featured release</h2>
         <article>
-            <h3>Featured release title</h3>
-            <p>Album, EP, or single description will be loaded from the music catalog.</p>
+            {featured_release?.map((release)=> {
+                return <FeaturedRelease 
+                    title={release.title}
+                    release_date={release.release_date}
+                    description={release.description}
+                />
+            })}
             <a href="/music">Explore the music catalog</a>
         </article>
-    </section>
-
-    <section aria-labelledby="studio-heading">
-        <h2 id="studio-heading">Studio highlight</h2>
-        <p>A rotating selection of instruments, recording equipment, and tools used to make the music.</p>
-        <a href="/gear">Browse the gear inventory</a>
     </section>
 
     <section aria-labelledby="start-heading">

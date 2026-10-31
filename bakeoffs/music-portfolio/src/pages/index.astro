@@ -5,25 +5,17 @@ import { createServerClient } from '../db/supabase';
 
 const supabase = createServerClient();
 const { data: featured_release, error } = await supabase.from("music_entries").select();
-
-
-
 ---
 
-<Layout title="Drozax Music | Chillsynth and Chillwave">
-    <section aria-labelledby="welcome-heading">
-        <header>
-            <p>Drozax Music</p>
-            <h1 id="welcome-heading">Chillsynth and chillwave</h1>
-        </header>
-
-        <figure>
-            <!-- <img src="/images/hero.jpg" alt="Abstract artwork representing Drozax music" /> -->
-            <figcaption>Welcome to my portfolio.</figcaption>
-        </figure>
+<Layout title="Drozax Music">
+    <section class="hero">
+        <div class="hero-heading">
+            <h1>Drozax Music</h1>
+            <p>Chillsynth and chillwave</p>
+        </div>
     </section>
 
-    <section aria-labelledby="featured-heading">
+    <section class="featured-releases">
         <h2 id="featured-heading">Featured release</h2>
         <article>
             {featured_release?.map((release)=> {
@@ -37,7 +29,7 @@ const { data: featured_release, error } = await supabase.from("music_entries").s
         </article>
     </section>
 
-    <section aria-labelledby="start-heading">
+    <section class="page-nav">
         <h2 id="start-heading">Explore the site</h2>
         <nav aria-label="Homepage sections">
             <a href="/about">Read about Drozax</a>
@@ -45,3 +37,4 @@ const { data: featured_release, error } = await supabase.from("music_entries").s
         </nav>
     </section>
 </Layout>
+

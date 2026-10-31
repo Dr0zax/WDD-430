@@ -1,0 +1,31 @@
+nav {
+    width: 100%;
+
+    ul {
+        padding: 1rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    li {
+        list-style: none;
+    }
+
+    a {
+        background-color: none;
+        padding: var(--space-sm);
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--color-primary);
+        color: var(--color-text-light);
+        backdrop-filter: blur(8px) saturate(80%);
+        transition: background-color 250ms ease, color 250ms;
+
+        &:hover {
+            background-color: var(--color-primary);
+            color: black;
+        }
+    }
+}

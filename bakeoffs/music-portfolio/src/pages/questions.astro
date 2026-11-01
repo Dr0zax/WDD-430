@@ -56,7 +56,7 @@ const { data: publishedQuestions } = await supabase
     <section aria-labelledby="questions-heading">
         <header>
             <h1 id="questions-heading">Questions</h1>
-            <p>Aks me anything (within reason)</p>
+            <p>Ask me anything (within reason)</p>
         </header>
 
         <form method="post" aria-describedby="question-note">
@@ -121,7 +121,7 @@ const { data: publishedQuestions } = await supabase
 
     <section aria-labelledby="answers-heading">
         <h2 id="answers-heading">Published questions and answers</h2>
-        <div id="published-questions">
+        <div class="published-questions">
             {
                 publishedQuestions?.length ? (
                     publishedQuestions.map((question) => (

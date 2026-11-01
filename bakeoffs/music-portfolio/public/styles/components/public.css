@@ -1,0 +1,200 @@
+/* Public-facing content patterns */
+
+body:not(.admin-dashboard) footer {
+    width: min(100% - (var(--content-gutter) * 2), var(--content-width));
+    margin: 0 auto;
+    padding: 2rem 0 2.5rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-note,
+.copyright {
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+}
+
+.footer-inner nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.footer-inner nav a {
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+}
+
+.footer-inner nav a:hover,
+.footer-inner nav a:focus-visible {
+    color: var(--color-accent-hover);
+}
+
+
+main > section:not(.hero) {
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+}
+
+main > section:not(.hero) > header h1 {
+    font-size: clamp(2.8rem, 7vw, 5.25rem);
+}
+
+main > section:not(.hero) > h2 {
+    font-size: clamp(1.8rem, 4vw, 2.75rem);
+}
+
+main > section:not(.hero) > figure {
+    margin: 2rem 0 0;
+}
+
+main > section:not(.hero) figure img,
+main article img {
+    display: block;
+    width: 100%;
+    border-radius: var(--radius);
+    object-fit: cover;
+}
+
+main > section:not(.hero) figure img {
+    max-height: 26rem;
+}
+
+figcaption {
+    margin-top: 0.6rem;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+}
+
+main article {
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    background: var(--color-surface-soft);
+}
+
+main article h3 {
+    margin-bottom: 0.45rem;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+}
+
+main article p + p {
+    margin-top: 0.65rem;
+}
+
+main article a,
+main > section > nav a,
+main form button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.25rem;
+    padding: 0.75rem 1rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--color-primary-strong);
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: background-color var(--transition-base);
+}
+
+main article a:hover,
+main > section > nav a:hover,
+main form button:hover {
+    background: var(--color-primary);
+}
+
+.home-page .page-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    margin: 0 auto;
+    max-width: 1180px;
+    margin-bottom: var(--space-lg);
+}
+
+.page-nav nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+main form {
+    display: flex;
+    flex-direction: column;
+    /* grid-template-columns: repeat(2, minmax(0, 1fr)); */
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+}
+
+main form > label,
+main form > div > label {
+    display: block;
+    margin-bottom: 0.45rem;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+main form input:not([type="checkbox"]),
+main form select,
+main form textarea {
+    width: 100%;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: rgb(16 13 32 / 0.6);
+    color: var(--color-text);
+}
+
+main form input:focus-visible,
+main form select:focus-visible,
+main form textarea:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+main form textarea {
+    resize: vertical;
+}
+
+main form button,
+main form > p,
+main form > div:last-of-type {
+    grid-column: 1 / -1;
+}
+
+main form > p {
+    margin: 0;
+    color: var(--color-text-muted);
+}
+
+main form > div:has(input[type="text"][tabindex="-1"]) {
+    position: absolute;
+    left: -9999px;
+}
+
+@media (max-width: 640px) {
+    .footer-inner {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-inner nav {
+        justify-content: flex-start;
+    }
+
+    main form {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,10 @@
+---
+import { clearAuthCookies } from "../../lib/admin.js";
+
+if (Astro.request.method === "POST") {
+    clearAuthCookies(Astro.cookies);
+    return Astro.redirect("/admin/login");
+}
+
+return Astro.redirect("/admin");
+---

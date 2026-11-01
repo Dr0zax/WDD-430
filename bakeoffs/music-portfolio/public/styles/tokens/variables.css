@@ -44,4 +44,5 @@
     --transition-fast: 0.1s ease;
     --base-size: 16px;
     --content-width: 72rem;
+    --content-gutter: clamp(1.25rem, 5vw, 4rem);
 }

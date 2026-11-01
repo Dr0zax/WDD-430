@@ -1,45 +1,88 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { createServerClient } from '../db/supabase.js';
+
+const search = Astro.url.searchParams.get('search')?.trim() ?? '';
+const category = Astro.url.searchParams.get('category')?.trim() ?? '';
+
+let gear = [];
+let errorMessage = '';
+
+let gearQuery = createServerClient()
+    .from('gear_entries')
+    .select('id, name, slug, category, manufacturer, model, description, personal_notes, image_url, external_url, status, tags')
+    .eq('is_published', true)
+    .order('name', { ascending: true });
+
+if (category) {
+    gearQuery = gearQuery.eq('category', category);
+}
+
+// Remove PostgREST operator characters before using the value in an OR filter.
+const safeSearch = search.replace(/[,%()]/g, ' ').trim();
+if (safeSearch) {
+    gearQuery = gearQuery.or(
+        `name.ilike.%${safeSearch}%,manufacturer.ilike.%${safeSearch}%,model.ilike.%${safeSearch}%,tags.ilike.%${safeSearch}%`,
+    );
+}
+
+const { data, error } = await gearQuery;
+if (error) errorMessage = 'Gear inventory is temporarily unavailable.';
+else gear = data ?? [];
 ---
 
 <Layout title="Gear | Drozax Music" description="Explore the instruments, equipment, software, and studio tools used by Drozax.">
     <section aria-labelledby="gear-heading">
         <header>
             <h1 id="gear-heading">Gear</h1>
-            <p>Instruments, studio hardware, software, and tools used in the Drozax studio.</p>
+            <p>The Software, Hardware, and Plugins that I use</p>
         </header>
 
         <form method="get" aria-label="Search gear inventory">
             <label for="gear-search">Search gear</label>
-            <input id="gear-search" name="search" type="search" placeholder="Search by name, maker, or model" />
+            <input id="gear-search" name="search" type="search" placeholder="Search by name, maker, or model" value={search} />
 
             <label for="gear-category">Category</label>
             <select id="gear-category" name="category">
                 <option value="">All categories</option>
-                <option value="instruments">Instruments</option>
-                <option value="microphones">Microphones</option>
-                <option value="hardware">Studio hardware</option>
-                <option value="effects">Effects and pedals</option>
-                <option value="monitoring">Monitoring</option>
-                <option value="computers">Computers and interfaces</option>
-                <option value="software">Software</option>
-                <option value="accessories">Accessories</option>
+                <option value="instruments" selected={category === 'instruments'}>Instruments</option>
+                <option value="microphones" selected={category === 'microphones'}>Microphones</option>
+                <option value="hardware" selected={category === 'hardware'}>Studio hardware</option>
+                <option value="effects" selected={category === 'effects'}>Effects and pedals</option>
+                <option value="monitoring" selected={category === 'monitoring'}>Monitoring</option>
+                <option value="computers" selected={category === 'computers'}>Computers and interfaces</option>
+                <option value="software" selected={category === 'software'}>Software</option>
+                <option value="accessories" selected={category === 'accessories'}>Accessories</option>
             </select>
             <button type="submit">Search inventory</button>
         </form>
     </section>
 
     <section aria-labelledby="inventory-heading">
-        <h2 id="inventory-heading">Studio inventory</h2>
+        <h2 id="inventory-heading">Inventory</h2>
+        {errorMessage && <p role="alert">{errorMessage}</p>}
         <div id="gear-list">
-            <article>
-                <img src="/images/gear-placeholder.jpg" alt="Gear item placeholder" />
-                <h3>Gear item name</h3>
-                <p>Category · Manufacturer · Model</p>
-                <p>Gear description and personal usage notes will be loaded from the database.</p>
-                <p>Status: Owned</p>
-                <a href="/gear/item-slug">View gear details</a>
-            </article>
+            {gear.length ? gear.map((item) => (
+                <article>
+                    {item.image_url ? (
+                        <img src={item.image_url} alt={`Photo of ${item.name}`} />
+                    ) : (
+                        <div class="gear-placeholder" aria-hidden="true">
+                            {item.name?.slice(0, 1).toUpperCase() || 'G'}
+                        </div>
+                    )}
+                    <h3>{item.name}</h3>
+                    <p class="gear-meta">
+                        {item.category || 'Gear'}
+                        {item.manufacturer && ` · ${item.manufacturer}`}
+                        {item.model && ` · ${item.model}`}
+                    </p>
+                    {item.description && <p>{item.description}</p>}
+                    {item.personal_notes && <p>{item.personal_notes}</p>}
+                    {item.status && <p class="gear-status">Status: {item.status}</p>}
+                    {item.external_url && <a href={item.external_url}>Learn more about {item.name}</a>}
+                </article>
+            )) : !errorMessage && <p>No published gear matches your search.</p>}
         </div>
     </section>
 </Layout>

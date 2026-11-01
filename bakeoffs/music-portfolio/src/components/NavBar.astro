@@ -1,8 +1,21 @@
-<nav>
+---
+const currentPath = Astro.url.pathname;
+const links = [
+    { href: "/music", label: "Music" },
+    { href: "/gear", label: "Gear" },
+    { href: "/questions", label: "Questions" },
+    { href: "/about", label: "About" },
+];
+---
+
+<nav class="site-nav" aria-label="Main navigation">
+    <a class="brand" href="/" aria-label="Drozax Music home">
+        <img src="/images/logo.gif" alt="">
+    </a>
     <ul>
-        <li><a class="" href="/">Home</a></li>
-        <li><a href="/music">Music</a></li>
-        <li><a href="/gear">Gear</a></li>
-        <li><a href="/questions">Questions</a></li>
+        <li><a class:list={{ active: currentPath === "/" }} href="/">Home</a></li>
+        {links.map((link) => (
+            <li><a class:list={{ active: currentPath.startsWith(link.href) }} href={link.href}>{link.label}</a></li>
+        ))}
     </ul>
 </nav>

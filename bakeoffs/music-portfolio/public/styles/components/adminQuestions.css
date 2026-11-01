@@ -1,0 +1,282 @@
+.questions-page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .questions-page-header h1 {
+        margin: 0 0 1rem;
+    }
+
+    .eyebrow,
+    .toolbar-label,
+    .field-label {
+        margin: 0;
+        color: var(--color-accent);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .eyebrow {
+        margin-bottom: 0.8rem;
+    }
+
+    .page-intro {
+        max-width: 38rem;
+        margin: 0;
+        font-size: 1.05rem;
+    }
+
+    .back-link {
+        flex: 0 0 auto;
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+    }
+
+    .admin-notice {
+        margin: 0 0 1.5rem;
+        padding: 0.85rem 1rem;
+        border: 1px solid var(--color-border);
+        border-radius: 0.7rem;
+    }
+
+    .admin-notice--success {
+        background: rgb(105 220 174 / 0.12);
+        color: #a9f3d4;
+    }
+
+    .admin-notice--error {
+        background: rgb(255 132 132 / 0.12);
+        color: #ffb8b8;
+    }
+
+    .question-toolbar {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.9rem;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .toolbar-label {
+        margin-bottom: 0.6rem;
+        color: var(--color-text-muted);
+    }
+
+    .filter-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+    }
+
+    .filter-tabs a {
+        padding: 0.45rem 0.7rem;
+        border-radius: 999px;
+        color: var(--color-text-muted);
+        font-size: 0.88rem;
+    }
+
+    .filter-tabs a:hover,
+    .filter-tabs a.active {
+        background: var(--color-surface-soft);
+        color: var(--color-text);
+    }
+
+    .question-count {
+        margin: 0;
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    .question-count strong {
+        color: var(--color-text);
+        font-size: 1.1rem;
+    }
+
+    .question-list {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .question-card {
+        padding: clamp(1rem, 3vw, 1.5rem);
+        border: 1px solid var(--color-border);
+        border-radius: 1rem;
+        background: var(--color-bg-raised);
+    }
+
+    .question-card-header,
+    .answer-form-footer {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .question-author,
+    .question-date,
+    .question-text {
+        margin: 0;
+    }
+
+    .question-author {
+        color: var(--color-text);
+        font-weight: 700;
+    }
+
+    .question-author span,
+    .question-date {
+        color: var(--color-text-muted);
+        font-size: 0.84rem;
+        font-weight: 400;
+    }
+
+    .question-date {
+        margin-top: 0.2rem;
+    }
+
+    .question-status {
+        padding: 0.3rem 0.6rem;
+        border-radius: 999px;
+        background: var(--color-surface-soft);
+        color: var(--color-text-muted);
+        font-size: 0.72rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .question-status--pending { background: rgb(246 174 141 / 0.16); color: var(--color-accent); }
+    .question-status--answered { background: rgb(154 140 255 / 0.16); color: #c1b9ff; }
+    .question-status--published { background: rgb(105 220 174 / 0.14); color: #a9f3d4; }
+    .question-status--rejected { background: rgb(255 132 132 / 0.13); color: #ffb8b8; }
+
+    .question-copy {
+        margin: 1.35rem 0 1.25rem;
+        padding: 1rem;
+        border-left: 3px solid var(--color-accent);
+        border-radius: 0 0.6rem 0.6rem 0;
+        background: var(--color-surface-soft);
+    }
+
+    .question-text {
+        margin-top: 0.45rem;
+        color: var(--color-text);
+        white-space: pre-wrap;
+    }
+
+    .answer-form {
+        display: grid;
+        gap: 0.6rem;
+    }
+
+    .answer-form textarea,
+    .status-field select {
+        width: 100%;
+        border: 1px solid var(--color-border);
+        border-radius: 0.55rem;
+        background: var(--color-bg);
+        color: var(--color-text);
+    }
+
+    .answer-form textarea {
+        min-height: 7rem;
+        padding: 0.8rem;
+        resize: vertical;
+    }
+
+    .answer-form textarea:focus,
+    .status-field select:focus {
+        border-color: var(--color-primary);
+        outline: 3px solid rgb(154 140 255 / 0.2);
+    }
+
+    .answer-form-footer {
+        align-items: flex-end;
+        margin-top: 0.25rem;
+    }
+
+    .status-field {
+        min-width: 12rem;
+    }
+
+    .status-field select {
+        display: block;
+        margin-top: 0.4rem;
+        padding: 0.65rem 0.7rem;
+    }
+
+    .save-button {
+        border: 0;
+    }
+
+    .delete-form {
+        margin-top: 1rem;
+        text-align: right;
+    }
+
+    .delete-form button {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--color-text-muted);
+        font-size: 0.82rem;
+    }
+
+    .delete-form button:hover {
+        color: #ffb8b8;
+    }
+
+    .empty-state {
+        padding: 4rem 1rem;
+        border: 1px dashed var(--color-border);
+        border-radius: 1rem;
+        text-align: center;
+    }
+
+    .empty-state-icon {
+        color: var(--color-accent);
+        font-size: 2rem;
+    }
+
+    .empty-state h2 {
+        margin: 0.7rem 0 0.4rem;
+        font-size: 1.8rem;
+    }
+
+    .empty-state p {
+        margin: 0 auto 1rem;
+    }
+
+    .empty-state a {
+        color: var(--color-accent);
+        text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+        .questions-page-header,
+        .question-toolbar,
+        .question-card-header,
+        .answer-form-footer {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .back-link {
+            order: -1;
+        }
+
+        .question-count {
+            align-self: flex-start;
+        }
+
+        .save-button {
+            width: 100%;
+        }
+    }

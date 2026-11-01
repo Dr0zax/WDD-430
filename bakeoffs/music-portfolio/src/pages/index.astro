@@ -4,7 +4,7 @@ import FeaturedRelease from '../components/FeaturedRelease.astro';
 import { createServerClient } from '../db/supabase';
 
 const supabase = createServerClient();
-const { data: featured_release, error } = await supabase.from("music_entries").select();
+const { data: featured_release, error } = await supabase.from("music_entries").select().eq("is_featured", true);
 ---
 
 <Layout title="Drozax Music">
@@ -15,26 +15,33 @@ const { data: featured_release, error } = await supabase.from("music_entries").s
         </div>
     </section>
 
-    <section class="featured-releases">
-        <h2 id="featured-heading">Featured release</h2>
-        <article>
-            {featured_release?.map((release)=> {
-                return <FeaturedRelease 
-                    title={release.title}
-                    release_date={release.release_date}
-                    description={release.description}
-                />
-            })}
-            <a href="/music">Explore the music catalog</a>
-        </article>
+    <section class="page-content">
+        <section class="featured-releases">
+            <h2 id="featured-heading">Featured release</h2>
+            <div class="featured-release-section">
+                {featured_release?.map((release)=> {
+                    return <FeaturedRelease 
+                        title={release.title}
+                        release_date={release.release_date}
+                        description={release.description}
+                        cover_image_url={release.cover_image_url}
+                        release_type={release.release_type}
+                        genre={release.genre}
+                        embed_url={release.embed_url}
+                    />
+                })}
+                <a class="featured-release-link" href="/music">Explore the music catalog</a>
+            </div>
+        </section>
+    
+        <section class="page-nav">
+            <h2 id="start-heading">Explore the site</h2>
+            <nav aria-label="Homepage sections">
+                <a href="/about">Read about Drozax</a>
+                <a href="/questions">Ask a question</a>
+            </nav>
+        </section>
     </section>
 
-    <section class="page-nav">
-        <h2 id="start-heading">Explore the site</h2>
-        <nav aria-label="Homepage sections">
-            <a href="/about">Read about Drozax</a>
-            <a href="/questions">Ask a question</a>
-        </nav>
-    </section>
 </Layout>
 

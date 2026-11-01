@@ -1,15 +1,15 @@
 body {
+    min-width: 320px;
     background: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-body);
-    line-height: 1.6;
-    background-image: url("/images/hero-banner.jpg");
+    line-height: 1.65;
 }
 
 h1,
 h2 {
     font-family: var(--font-display);
-    font-weight: 400;
+    font-weight: 500;
     letter-spacing: -0.045em;
 }
 
@@ -26,6 +26,17 @@ h2 {
 p {
     color: var(--color-text-muted);
     max-width: 42rem;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
 }
 
 a {

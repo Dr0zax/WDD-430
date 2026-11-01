@@ -1,0 +1,132 @@
+.featured-releases article {
+    margin: 0;
+}
+
+.featured-releases > .featured-release-section > a {
+    justify-self: start;
+}
+
+.featured-release-section {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.featured-release-card {
+    display: grid;
+    grid-template-columns: minmax(12rem, 34%) minmax(0, 1fr);
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-soft);
+}
+
+.featured-release-art {
+    position: relative;
+    min-height: 18rem;
+    background: var(--color-bg-raised);
+}
+
+.featured-release-art img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+}
+
+.featured-release-ribbon {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    border-radius: 999px;
+    background: rgb(16 13 32 / 0.75);
+    color: var(--color-text-light);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    backdrop-filter: blur(0.5rem);
+}
+
+.featured-release-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(1.5rem, 4vw, 3rem);
+}
+
+.featured-release-eyebrow {
+    margin: 0 0 0.75rem;
+    color: var(--color-accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.featured-release-copy h3 {
+    margin: 0;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    line-height: 1.05;
+}
+
+.featured-release-meta {
+    margin: 0.85rem 0 0;
+    color: var(--color-primary);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.featured-release-description {
+    max-width: 42rem;
+    margin: 1.25rem 0 0;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+}
+
+.featured-release-link {
+    justify-self: start;
+}
+
+@media (max-width: 640px) {
+    .featured-release-card {
+        grid-template-columns: 1fr;
+    }
+
+    .featured-release-art {
+        min-height: 14rem;
+        max-height: 22rem;
+    }
+}
+
+#release-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-lg);
+    margin-top: var(--space-md);
+}
+
+#release-list article {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+#release-list article > img {
+    width: 100%;
+    height: clamp(12rem, 24vw, 18rem);
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+}
+
+#release-list article > a {
+   margin-top: auto;
+}
+
+#release-list article h3,
+#release-list article p {
+    margin-top: 0;
+}

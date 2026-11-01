@@ -6,8 +6,15 @@
 @import url('base/reset.css') layer(base);
 @import url('base/elements.css') layer(base);
 
+@import url('components/release.css') layer(components);
+@import url('components/gear.css') layer(components);
+@import url('components/hero.css') layer(components);
+@import url('components/adminDashboard.css') layer(components);
+@import url('components/adminQuestions.css') layer(components);
+@import url('components/adminMusic.css') layer(components);
 @import url('components/navBar.css') layer(components);
+@import url('components/public.css') layer(components);
 
 @import url('layout/primary.css') layer(layout);
 
-@import url('utilities/utilities.css') layer(utilities);
+/* @import url('utilities/utilities.css') layer(utilities); */

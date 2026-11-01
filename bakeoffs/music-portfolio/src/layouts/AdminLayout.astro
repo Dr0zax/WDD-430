@@ -1,0 +1,32 @@
+---
+import AdminNav from '../components/adminNav.astro';
+
+interface Props {
+    title?: string;
+    userEmail?: string;
+}
+
+const { title = "Admin", userEmail } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="stylesheet" href="/styles/main.css" />
+        <title>{title} | Drozax Music</title>
+    </head>
+    <body class="admin-dashboard">
+        <header class="admin-header">
+            <AdminNav></AdminNav>
+            <div class="admin-account">
+                {userEmail && <p>Signed in as {userEmail}</p>}
+                {userEmail && <form method="post" action="/admin/logout"><button type="submit">Log out</button></form>}
+            </div>
+        </header>
+        <main class="admin-main">
+            <slot />
+        </main>
+    </body>
+</html>

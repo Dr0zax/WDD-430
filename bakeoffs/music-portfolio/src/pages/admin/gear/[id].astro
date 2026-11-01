@@ -1,0 +1,169 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import {
+    asBoolean,
+    clean,
+    formError,
+    requireAdmin,
+} from "../../../lib/admin.js";
+
+const user = await requireAdmin(Astro);
+if (user instanceof Response) return user;
+const supabase = Astro.locals.supabase;
+const id = Astro.params.id;
+let errorMessage = "";
+let message = "";
+let { data: entry, error: loadError } = await supabase
+    .from("gear_entries")
+    .select("*")
+    .eq("id", id)
+    .single();
+if (loadError) errorMessage = formError(loadError);
+if (Astro.request.method === "POST" && entry) {
+    const form = await Astro.request.formData();
+    if (String(form.get("action")) === "delete") {
+        const { error } = await supabase
+            .from("gear_entries")
+            .delete()
+            .eq("id", id);
+        if (error) errorMessage = formError(error);
+        else
+            return Astro.redirect(
+                "/admin/gear?message=Gear%20entry%20deleted.",
+            );
+    } else {
+        const { data, error } = await supabase
+            .from("gear_entries")
+            .update({
+                name: clean(form.get("name")),
+                slug: clean(form.get("slug")),
+                category: clean(form.get("category")),
+                manufacturer: clean(form.get("manufacturer")),
+                model: clean(form.get("model")),
+                description: clean(form.get("description")),
+                personal_notes: clean(form.get("personal_notes")),
+                image_url: clean(form.get("image_url")),
+                external_url: clean(form.get("external_url")),
+                status: clean(form.get("status")),
+                tags: clean(form.get("tags")),
+                is_featured: asBoolean(form.get("is_featured")),
+                is_published: asBoolean(form.get("is_published")),
+                updated_at: new Date().toISOString(),
+            })
+            .eq("id", id)
+            .select("*")
+            .single();
+        if (error) errorMessage = formError(error);
+        else {
+            entry = data;
+            message = "Gear entry saved.";
+        }
+    }
+}
+---
+
+<AdminLayout title="Edit gear" userEmail={user.email}>
+    <h1>Edit gear entry</h1>
+    {message && <p role="status">{message}</p>}
+    {errorMessage && <p role="alert">{errorMessage}</p>}
+    {
+        entry && (
+            <form method="post">
+                <>
+                    <label for="name">Name</label>
+                    <input id="name" name="name" value={entry.name} required />
+                </>
+                <>
+                    <label for="slug">Slug</label>
+                    <input id="slug" name="slug" value={entry.slug} required />
+                </>
+                <>
+                    <label for="category">Category</label>
+                    <input
+                        id="category"
+                        name="category"
+                        value={entry.category ?? ""}
+                    />
+                </>
+                <>
+                    <label for="manufacturer">Manufacturer</label>
+                    <input
+                        id="manufacturer"
+                        name="manufacturer"
+                        value={entry.manufacturer ?? ""}
+                    />
+                </>
+                <>
+                    <label for="model">Model</label>
+                    <input id="model" name="model" value={entry.model ?? ""} />
+                </>
+                <>
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description">
+                        {entry.description ?? ""}
+                    </textarea>
+                </>
+                <>
+                    <label for="personal_notes">Personal notes</label>
+                    <textarea id="personal_notes" name="personal_notes">
+                        {entry.personal_notes ?? ""}
+                    </textarea>
+                </>
+                <>
+                    <label for="image_url">Image URL</label>
+                    <input
+                        id="image_url"
+                        name="image_url"
+                        type="url"
+                        value={entry.image_url ?? ""}
+                    />
+                </>
+                <>
+                    <label for="external_url">
+                        Purchase or manufacturer URL
+                    </label>
+                    <input
+                        id="external_url"
+                        name="external_url"
+                        type="url"
+                        value={entry.external_url ?? ""}
+                    />
+                </>
+                <>
+                    <label for="status">Status</label>
+                    <input
+                        id="status"
+                        name="status"
+                        value={entry.status ?? ""}
+                    />
+                </>
+                <>
+                    <label for="tags">Tags</label>
+                    <input id="tags" name="tags" value={entry.tags ?? ""} />
+                </>
+                <label>
+                    <input
+                        name="is_featured"
+                        type="checkbox"
+                        checked={entry.is_featured}
+                    />{" "}
+                    Featured
+                </label>
+                <label>
+                    <input
+                        name="is_published"
+                        type="checkbox"
+                        checked={entry.is_published}
+                    />{" "}
+                    Published
+                </label>
+                <button type="submit">Save changes</button>
+            </form>
+        )
+    }
+    <form method="post">
+        <input type="hidden" name="action" value="delete" /><button
+            type="submit">Delete entry</button>
+    </form>
+    <p><a href="/admin/gear">Back to gear</a></p>
+</AdminLayout>

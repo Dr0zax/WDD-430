@@ -1,0 +1,105 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { createServerClient } from '../../db/supabase.js';
+
+const search = Astro.url.searchParams.get('search')?.trim() ?? '';
+const releaseType = Astro.url.searchParams.get('release_type')?.trim() ?? '';
+const sort = Astro.url.searchParams.get('sort') ?? 'newest';
+
+let releases = [];
+let errorMessage = '';
+
+let releasesQuery = createServerClient()
+    .from('music_entries')
+    .select('id, title, slug, release_type, release_date, description, cover_image_url, genre, external_links, embed_url')
+    .eq('is_published', true);
+
+if (releaseType) {
+    releasesQuery = releasesQuery.eq('release_type', releaseType);
+}
+
+// Remove PostgREST operator characters before using the value in an OR filter.
+const safeSearch = search.replace(/[,%()]/g, ' ').trim();
+if (safeSearch) {
+    releasesQuery = releasesQuery.or(`title.ilike.%${safeSearch}%,genre.ilike.%${safeSearch}%`);
+}
+
+if (sort === 'title') {
+    releasesQuery = releasesQuery.order('title', { ascending: true });
+} else {
+    releasesQuery = releasesQuery.order('release_date', {
+        ascending: sort === 'oldest',
+        nullsFirst: false,
+    });
+}
+
+const { data, error } = await releasesQuery;
+if (error) errorMessage = 'Releases are temporarily unavailable.';
+else releases = data ?? [];
+
+const formatDate = (date) =>
+    date
+        ? new Intl.DateTimeFormat('en', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+          }).format(new Date(`${date}T00:00:00`))
+        : 'Release date unavailable';
+---
+
+<Layout title="Music Catalog | Drozax Music" description="Browse Drozax music releases, tracks, genres, and listening links.">
+    <section aria-labelledby="music-heading">
+        <header>
+            <h1 id="music-heading">Music catalog</h1>
+            <p>My Releases</p>
+        </header>
+
+        <form method="get" aria-label="Filter music catalog">
+            <label for="music-search">Search releases</label>
+            <input id="music-search" name="search" type="search" placeholder="Search by title or genre" value={search} />
+
+            <label for="release-type">Release type</label>
+            <select id="release-type" name="release_type">
+                <option value="">All release types</option>
+                <option value="album" selected={releaseType === 'album'}>Album</option>
+                <option value="ep" selected={releaseType === 'ep'}>EP</option>
+                <option value="single" selected={releaseType === 'single'}>Single</option>
+                <option value="soundtrack" selected={releaseType === 'soundtrack'}>Soundtrack</option>
+                <option value="demo" selected={releaseType === 'demo'}>Demo</option>
+            </select>
+
+            <label for="music-sort">Sort by</label>
+            <select id="music-sort" name="sort">
+                <option value="newest">Release date, newest first</option>
+                <option value="oldest" selected={sort === 'oldest'}>Release date, oldest first</option>
+                <option value="title" selected={sort === 'title'}>Title</option>
+            </select>
+            <button type="submit">Apply filters</button>
+        </form>
+    </section>
+
+    <section aria-labelledby="releases-heading">
+        <h2 id="releases-heading">Releases</h2>
+        {errorMessage && <p role="alert">{errorMessage}</p>}
+        <div id="release-list">
+            {releases.length ? releases.map((release) => (
+                <article>
+                    <img
+                        src={release.cover_image_url || '/images/release-placeholder.jpg'}
+                        alt={release.cover_image_url ? `Cover artwork for ${release.title}` : 'Cover artwork placeholder'}
+                    />
+                    <h3>{release.title}</h3>
+                    <p>
+                        <time datetime={release.release_date ?? undefined}>
+                            {formatDate(release.release_date)}
+                        </time>
+                        {release.release_type && ` · ${release.release_type}`}
+                        {release.genre && ` · ${release.genre}`}
+                    </p>
+                    {release.description && <p>{release.description}</p>}
+                    {release.embed_url && <a href={release.embed_url}>Listen to {release.title}</a>}
+                </article>
+            )) : !errorMessage && <p>No published releases match your search.</p>}
+        </div>
+    </section>
+</Layout>

@@ -1,0 +1,184 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import {
+    asBoolean,
+    clean,
+    formError,
+    requireAdmin,
+} from "../../../lib/admin.js";
+
+const user = await requireAdmin(Astro);
+if (user instanceof Response) return user;
+const supabase = Astro.locals.supabase;
+let message = Astro.url.searchParams.get("message") || "";
+let errorMessage = "";
+
+if (Astro.request.method === "POST") {
+    const form = await Astro.request.formData();
+    const action = String(form.get("action") || "");
+    if (action === "delete") {
+        const { error } = await supabase
+            .from("music_entries")
+            .delete()
+            .eq("id", String(form.get("id")));
+        if (error) errorMessage = formError(error);
+        else message = "Music entry deleted.";
+    } else if (action === "create") {
+        const { error } = await supabase.from("music_entries").insert({
+            title: clean(form.get("title")),
+            slug: clean(form.get("slug")),
+            release_type: clean(form.get("release_type")),
+            release_date: clean(form.get("release_date")),
+            description: clean(form.get("description")),
+            cover_image_url: clean(form.get("cover_image_url")),
+            genre: clean(form.get("genre")),
+            credits: clean(form.get("credits")),
+            track_listing: clean(form.get("track_listing")),
+            external_links: clean(form.get("external_links")),
+            embed_url: clean(form.get("embed_url")),
+            is_featured: asBoolean(form.get("is_featured")),
+            is_published: asBoolean(form.get("is_published")),
+        });
+        if (error) errorMessage = formError(error);
+        else
+            return Astro.redirect(
+                "/admin/music?message=Music%20entry%20created.",
+            );
+    }
+}
+
+const { data: entries, error } = await supabase
+    .from("music_entries")
+    .select("*")
+    .order("release_date", { ascending: false, nullsFirst: false });
+if (error && !errorMessage) errorMessage = formError(error);
+
+const formatDate = (date) =>
+    date
+        ? new Intl.DateTimeFormat("en", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+          }).format(new Date(`${date}T00:00:00`))
+        : "Date not set";
+---
+
+<AdminLayout title="Music" userEmail={user.email}>
+    <h1>Music management</h1>
+    {message && <p role="status">{message}</p>}
+    {errorMessage && <p role="alert">{errorMessage}</p>}
+    <p><a href="/admin">Dashboard</a></p>
+    <h2>Add music entry</h2>
+    <form method="post">
+        <input type="hidden" name="action" value="create" />
+        <label for="title">Title</label><input
+            id="title"
+            name="title"
+            required
+        />
+        <label for="slug">Slug</label><input
+            id="slug"
+            name="slug"
+            required
+            pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+        />
+        <label for="release_type">Release type</label>
+        <select id="release_type" name="release_type">
+            <option value="">Select a release type</option>
+            <option value="album">Album</option>
+            <option value="ep">EP</option>
+            <option value="single">Single</option>
+            <option value="soundtrack">Soundtrack</option>
+            <option value="demo">Demo</option>
+        </select>
+        <label for="release_date">Release date</label><input
+            id="release_date"
+            name="release_date"
+            type="date"
+        />
+        <label for="description">Description</label><textarea
+            id="description"
+            name="description"></textarea>
+        <label for="cover_image_url">Cover image URL</label><input
+            id="cover_image_url"
+            name="cover_image_url"
+            type="url"
+        />
+        <label for="genre">Genre or tags</label><input
+            id="genre"
+            name="genre"
+        />
+        <label for="credits">Credits</label><textarea
+            id="credits"
+            name="credits"></textarea>
+        <label for="track_listing">Track listing</label><textarea
+            id="track_listing"
+            name="track_listing"></textarea>
+        <label for="external_links">External links</label><textarea
+            id="external_links"
+            name="external_links"></textarea>
+        <label for="embed_url">Embed URL</label><input
+            id="embed_url"
+            name="embed_url"
+            type="url"
+        />
+        <label><input name="is_featured" type="checkbox" /> Featured</label>
+        <label><input name="is_published" type="checkbox" /> Published</label>
+        <button type="submit">Create music entry</button>
+    </form>
+    <section class="music-entries-panel" aria-labelledby="existing-entries-heading">
+        <div class="music-entries-heading">
+            <div>
+                <p class="admin-section-kicker">Library</p>
+                <h2 id="existing-entries-heading">Existing entries</h2>
+            </div>
+            <p class="music-entry-count">{entries?.length ?? 0} {entries?.length === 1 ? "release" : "releases"}</p>
+        </div>
+        {
+            entries?.length ? (
+            <ul class="music-entry-list">
+                {entries.map((entry) => (
+                    <li class="music-entry-card">
+                        <div class="music-entry-art" aria-hidden="true">
+                            {entry.cover_image_url ? (
+                                <img src={entry.cover_image_url} alt="" />
+                            ) : (
+                                <span>{entry.title?.slice(0, 1).toUpperCase() || "♪"}</span>
+                            )}
+                        </div>
+                        <div class="music-entry-details">
+                            <div class="music-entry-title-row">
+                                <a class="music-entry-title" href={`/admin/music/${entry.id}`}>{entry.title}</a>
+                                <span class:list={["music-entry-status", entry.is_published ? "is-published" : "is-draft"]}>
+                                    {entry.is_published ? "Published" : "Draft"}
+                                </span>
+                            </div>
+                            <p class="music-entry-meta">
+                                {entry.release_type || "Release"}
+                                {entry.genre && ` · ${entry.genre}`}
+                                {` · ${formatDate(entry.release_date)}`}
+                            </p>
+                            {entry.description && <p class="music-entry-description">{entry.description}</p>}
+                        </div>
+                        <div class="music-entry-actions">
+                            {entry.is_featured && <span class="music-entry-featured">Featured</span>}
+                            <a class="music-entry-edit" href={`/admin/music/${entry.id}`}>Edit</a>
+                            <form method="post">
+                                <input type="hidden" name="action" value="delete" />
+                                <input type="hidden" name="id" value={entry.id} />
+                                <button type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        ) : (
+            <div class="music-entries-empty">
+                <span aria-hidden="true">♪</span>
+                <p>No music entries yet.</p>
+                <small>Create your first release using the form above.</small>
+            </div>
+        )
+        }
+    </section>
+</AdminLayout>

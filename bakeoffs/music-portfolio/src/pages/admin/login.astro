@@ -1,0 +1,64 @@
+---
+import { createServerClient } from "../../db/supabase.js";
+import { getAdminUser, isAdmin, setAuthCookies } from "../../lib/admin.js";
+
+let errorMessage = "";
+if (Astro.request.method === "GET" && (await getAdminUser(Astro.cookies))) {
+    return Astro.redirect("/admin");
+}
+
+if (Astro.request.method === "POST") {
+    const form = await Astro.request.formData();
+    const email = String(form.get("email") || "").trim();
+    const password = String(form.get("password") || "");
+    const supabase = createServerClient();
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
+
+    if (error || !data.session || !data.user || !isAdmin(data.user)) {
+        await supabase.auth.signOut();
+        errorMessage =
+            error?.message ||
+            "This account is not authorized to access the administrator area.";
+    } else {
+        setAuthCookies(Astro.cookies, data.session);
+        return Astro.redirect("/admin");
+    }
+}
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>Administrator sign in | Drozax Music</title>
+    </head>
+    <body>
+        <main>
+            <h1>Administrator sign in</h1>
+            {errorMessage && <p role="alert">{errorMessage}</p>}
+            <form method="post">
+                <label for="email">Email</label>
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autocomplete="username"
+                    required
+                />
+                <label for="password">Password</label>
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                />
+                <button type="submit">Sign in</button>
+            </form>
+        </main>
+    </body>
+</html>

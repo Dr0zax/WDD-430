@@ -1,0 +1,59 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { requireAdmin } from "../../lib/admin.js";
+
+const user = await requireAdmin(Astro);
+if (user instanceof Response) return user;
+
+const supabase = Astro.locals.supabase;
+const [music, gear, pending, published] = await Promise.all([
+    supabase.from("music_entries").select("id", { count: "exact", head: true }),
+    supabase.from("gear_entries").select("id", { count: "exact", head: true }),
+    supabase
+        .from("questions")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending"),
+    supabase
+        .from("questions")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "published"),
+]);
+const errors = [music, gear, pending, published].filter(
+    (result) => result.error,
+);
+---
+
+<AdminLayout title="Dashboard" userEmail={user.email}>
+    <h1>Administrator dashboard</h1>
+    {
+        errors.length > 0 && (
+            <p role="alert">
+                Some dashboard counts could not be loaded. Check your database
+                migration.
+            </p>
+        )
+    }
+    <section class="metrics">
+        <div class="metric-card">
+            <h2>Music entries</h2>
+            <p>{music.count ?? "—"}</p>
+        </div>
+        <div class="metric-card">
+            <h2>Gear entries</h2>
+            <p>{gear.count ?? "—"}</p>
+        </div>
+        <div class="metric-card">
+            <h2>Pending questions</h2>
+            <p>{pending.count ?? "—"}</p>
+        </div>
+        <div class="metric-card">
+            <h2>Published questions</h2>
+            <p>{published.count ?? "—"}</p>
+        </div>
+    </section>
+    <p>
+        <a href="/admin/music">Create music entry</a>
+        <a href="/admin/gear">Create gear entry</a>
+        <a href="/admin/questions">Review questions</a>
+    </p>
+</AdminLayout>

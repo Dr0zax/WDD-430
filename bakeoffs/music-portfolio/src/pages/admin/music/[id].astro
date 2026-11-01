@@ -1,0 +1,178 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import {
+    asBoolean,
+    clean,
+    formError,
+    requireAdmin,
+} from "../../../lib/admin.js";
+
+const user = await requireAdmin(Astro);
+if (user instanceof Response) return user;
+const supabase = Astro.locals.supabase;
+const id = Astro.params.id;
+let errorMessage = "";
+let message = "";
+let { data: entry, error: loadError } = await supabase
+    .from("music_entries")
+    .select("*")
+    .eq("id", id)
+    .single();
+if (loadError) errorMessage = formError(loadError);
+
+if (Astro.request.method === "POST" && entry) {
+    const form = await Astro.request.formData();
+    const action = String(form.get("action") || "update");
+    if (action === "delete") {
+        const { error } = await supabase
+            .from("music_entries")
+            .delete()
+            .eq("id", id);
+        if (error) errorMessage = formError(error);
+        else
+            return Astro.redirect(
+                "/admin/music?message=Music%20entry%20deleted.",
+            );
+    } else {
+        const { data, error } = await supabase
+            .from("music_entries")
+            .update({
+                title: clean(form.get("title")),
+                slug: clean(form.get("slug")),
+                release_type: clean(form.get("release_type")),
+                release_date: clean(form.get("release_date")),
+                description: clean(form.get("description")),
+                cover_image_url: clean(form.get("cover_image_url")),
+                genre: clean(form.get("genre")),
+                credits: clean(form.get("credits")),
+                track_listing: clean(form.get("track_listing")),
+                external_links: clean(form.get("external_links")),
+                embed_url: clean(form.get("embed_url")),
+                is_featured: asBoolean(form.get("is_featured")),
+                is_published: asBoolean(form.get("is_published")),
+                updated_at: new Date().toISOString(),
+            })
+            .eq("id", id)
+            .select("*")
+            .single();
+        if (error) errorMessage = formError(error);
+        else {
+            entry = data;
+            message = "Music entry saved.";
+        }
+    }
+}
+---
+
+<AdminLayout title="Edit music" userEmail={user.email}>
+    <h1>Edit music entry</h1>
+    {message && <p role="status">{message}</p>}
+    {errorMessage && <p role="alert">{errorMessage}</p>}
+    {
+        entry && (
+            <form method="post">
+                <>
+                    <label for="title">Title</label>
+                    <input
+                        id="title"
+                        name="title"
+                        value={entry.title}
+                        required
+                    />
+                </>
+                <>
+                    <label for="slug">Slug</label>
+                    <input id="slug" name="slug" value={entry.slug} required />
+                </>
+                <>
+                    <label for="release_type">Release type</label>
+                    <select id="release_type" name="release_type">
+                        <option value="">Select a release type</option>
+                        <option value="album" selected={entry.release_type === "album"}>Album</option>
+                        <option value="ep" selected={entry.release_type === "ep"}>EP</option>
+                        <option value="single" selected={entry.release_type === "single"}>Single</option>
+                        <option value="soundtrack" selected={entry.release_type === "soundtrack"}>Soundtrack</option>
+                        <option value="demo" selected={entry.release_type === "demo"}>Demo</option>
+                    </select>
+                </>
+                <>
+                    <label for="release_date">Release date</label>
+                    <input
+                        id="release_date"
+                        name="release_date"
+                        type="date"
+                        value={entry.release_date ?? ""}
+                    />
+                </>
+                <>
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description">
+                        {entry.description ?? ""}
+                    </textarea>
+                </>
+                <>
+                    <label for="cover_image_url">Cover image URL</label>
+                    <input
+                        id="cover_image_url"
+                        name="cover_image_url"
+                        type="url"
+                        value={entry.cover_image_url ?? ""}
+                    />
+                </>
+                <>
+                    <label for="genre">Genre or tags</label>
+                    <input id="genre" name="genre" value={entry.genre ?? ""} />
+                </>
+                <>
+                    <label for="credits">Credits</label>
+                    <textarea id="credits" name="credits">
+                        {entry.credits ?? ""}
+                    </textarea>
+                </>
+                <>
+                    <label for="track_listing">Track listing</label>
+                    <textarea id="track_listing" name="track_listing">
+                        {entry.track_listing ?? ""}
+                    </textarea>
+                </>
+                <>
+                    <label for="external_links">External links</label>
+                    <textarea id="external_links" name="external_links">
+                        {entry.external_links ?? ""}
+                    </textarea>
+                </>
+                <>
+                    <label for="embed_url">Embed URL</label>
+                    <input
+                        id="embed_url"
+                        name="embed_url"
+                        type="url"
+                        value={entry.embed_url ?? ""}
+                    />
+                </>
+                <label>
+                    <input
+                        name="is_featured"
+                        type="checkbox"
+                        checked={entry.is_featured}
+                    />{" "}
+                    Featured
+                </label>
+                <label>
+                    <input
+                        name="is_published"
+                        type="checkbox"
+                        checked={entry.is_published}
+                    />{" "}
+                    Published
+                </label>
+                <button type="submit">Save changes</button>
+            </form>
+        )
+    }
+    <form method="post">
+        <input type="hidden" name="action" value="delete" /><button
+            type="submit">Delete entry</button>
+    </form>
+    <p><a href="/admin/music">Back to music</a></p>
+</AdminLayout>

@@ -11,6 +11,8 @@ const {
 	title = "Drozax Music",
 	description = "The music portfolio of Drozax, a chillsynth and chillwave artist.",
 } = Astro.props;
+
+const isHomePage = Astro.url.pathname === "/";
 ---
 
 <!doctype html>
@@ -25,7 +27,7 @@ const {
 		<meta name="description" content={description} />
 		<title>{title}</title>
 	</head>
-	<body>
+	<body class:list={{ "home-page": isHomePage }}>
 		<header>
 			<NavBar />
 		</header>

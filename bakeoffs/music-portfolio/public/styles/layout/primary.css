@@ -1,41 +1,27 @@
 main {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: var(--space-xl);
-    max-width: var(--content-width);
+    gap: var(--space-lg);
     margin: 0 auto;
 }
 
-main > h1 {
-    margin-top: clamp(2rem, 9vw, 8rem);
+body:not(.home-page) main {
+    padding: var(--space-lg);
 }
 
-main > p {
-    font-size: clamp(1.05rem, 2vw, 1.35rem);
-    margin-top: -1.25rem;
+main > section:not(.hero) > header,
+main > section:not(.hero) > h2 {
+    margin-bottom: 2rem;
 }
 
-main > p + p {
+main > section:not(.hero) > header p {
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    margin-top: 0.75rem;
+}
+
+main > section:not(.hero) > h2,
+main > section:not(.hero) > header h1 {
     color: var(--color-text);
-    font-size: 1rem;
-    margin-top: -2.25rem;
-    max-width: 32rem;
 }
 
-.hero {
-    display: grid;
-    place-items: center;
 
-    h1, p {
-        color: white;
-    }
-
-    .hero-heading {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-}

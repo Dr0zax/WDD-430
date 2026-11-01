@@ -1,35 +1,114 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import { createServerClient } from "../db/supabase.js";
+
+const supabase = createServerClient();
+let message = Astro.url.searchParams.get("message") || "";
+let errorMessage = "";
+
+if (Astro.request.method === "POST") {
+    const form = await Astro.request.formData();
+    const visitorName = String(form.get("visitor_name") || "").trim() || null;
+    const visitorEmail = String(form.get("visitor_email") || "").trim() || null;
+    const questionText = String(form.get("question_text") || "").trim();
+    const honeypot = String(form.get("website") || "").trim();
+    const consent = form.get("consent") === "on";
+
+    if (honeypot) {
+        return Astro.redirect(
+            "/questions?message=" +
+                encodeURIComponent("Thanks. Your question has been received."),
+        );
+    } else if (!questionText || !consent) {
+        errorMessage =
+            "Please provide a question and consent to publication with your display name.";
+    } else {
+        const { error } = await supabase.from("questions").insert({
+            visitor_name: visitorName,
+            visitor_email: visitorEmail,
+            question_text: questionText,
+            status: "pending",
+        });
+        if (error)
+            errorMessage =
+                "Your question could not be submitted. Please try again.";
+        else
+            return Astro.redirect(
+                "/questions?message=" +
+                    encodeURIComponent(
+                        "Thanks. Your question was submitted for review.",
+                    ),
+            );
+    }
+}
+
+const { data: publishedQuestions } = await supabase
+    .from("questions")
+    .select("id, visitor_name, question_text, answer_text, published_at")
+    .eq("status", "published")
+    .order("published_at", { ascending: false });
 ---
 
-<Layout title="Questions | Drozax Music" description="Ask Drozax a question and read published questions and answers.">
+<Layout
+    title="Questions | Drozax Music"
+    description="Ask Drozax a question and read published questions and answers."
+>
     <section aria-labelledby="questions-heading">
         <header>
             <h1 id="questions-heading">Questions</h1>
-            <p>Ask about the music, studio, gear, or creative process.</p>
+            <p>Aks me anything (within reason)</p>
         </header>
 
         <form method="post" aria-describedby="question-note">
-            <p id="question-note">Questions are reviewed before they are published. Email addresses are kept private.</p>
+            <p id="question-note">
+                Questions are reviewed before they are published. Email
+                addresses are kept private.
+            </p>
+            {message && <p role="status">{message}</p>}
+            {errorMessage && <p role="alert">{errorMessage}</p>}
 
             <div>
-                <label for="visitor-name">Name or display name <span>(optional)</span></label>
-                <input id="visitor-name" name="visitor_name" type="text" autocomplete="name" />
+                <label for="visitor-name"
+                    >Name or display name <span>(optional)</span></label
+                >
+                <input
+                    id="visitor-name"
+                    name="visitor_name"
+                    type="text"
+                    autocomplete="name"
+                />
             </div>
 
             <div>
-                <label for="visitor-email">Email address <span>(optional)</span></label>
-                <input id="visitor-email" name="visitor_email" type="email" autocomplete="email" />
+                <label for="visitor-email"
+                    >Email address <span>(optional)</span></label
+                >
+                <input
+                    id="visitor-email"
+                    name="visitor_email"
+                    type="email"
+                    autocomplete="email"
+                />
             </div>
 
             <div>
                 <label for="question-text">Question</label>
-                <textarea id="question-text" name="question_text" rows="6" required></textarea>
+                <textarea
+                    id="question-text"
+                    name="question_text"
+                    rows="6"
+                    required></textarea>
             </div>
 
             <div>
                 <label for="website">Leave this field blank</label>
-                <input id="website" name="website" type="text" autocomplete="off" tabindex="-1" />
+                <input
+                    id="website"
+                    name="website"
+                    type="text"
+                    autocomplete="off"
+                    tabindex="-1"
+                />
             </div>
 
             <label>
@@ -43,11 +122,23 @@ import Layout from '../layouts/Layout.astro';
     <section aria-labelledby="answers-heading">
         <h2 id="answers-heading">Published questions and answers</h2>
         <div id="published-questions">
-            <article>
-                <h3>Example visitor question</h3>
-                <p>Published question text will appear here after administrator approval.</p>
-                <p><strong>Answer:</strong> The artist's answer will appear here.</p>
-            </article>
+            {
+                publishedQuestions?.length ? (
+                    publishedQuestions.map((question) => (
+                        <article>
+                            <h3>
+                                {question.visitor_name || "Visitor question"}
+                            </h3>
+                            <p>{question.question_text}</p>
+                            <p>
+                                <strong>Answer:</strong> {question.answer_text}
+                            </p>
+                        </article>
+                    ))
+                ) : (
+                    <p>No published questions yet.</p>
+                )
+            }
         </div>
     </section>
 </Layout>

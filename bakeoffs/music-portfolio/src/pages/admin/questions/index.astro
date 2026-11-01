@@ -1,0 +1,197 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { clean, formError, requireAdmin } from "../../../lib/admin.js";
+
+const user = await requireAdmin(Astro);
+if (user instanceof Response) return user;
+
+const supabase = Astro.locals.supabase;
+let message = Astro.url.searchParams.get("message") || "";
+let errorMessage = "";
+
+if (Astro.request.method === "POST") {
+    const form = await Astro.request.formData();
+    const action = String(form.get("action") || "");
+    const id = String(form.get("id") || "");
+
+    if (action === "delete") {
+        const { data, error } = await supabase
+            .from("questions")
+            .delete()
+            .eq("id", id)
+            .select("id")
+            .maybeSingle();
+
+        if (error) errorMessage = formError(error);
+        else if (!data) errorMessage = "Question not found; nothing was deleted.";
+        else message = "Question deleted.";
+
+    } else if (action === "update") {
+        const status = String(form.get("status") || "pending");
+        const now = new Date().toISOString();
+        const { error } = await supabase
+            .from("questions")
+            .update({
+                answer_text: clean(form.get("answer_text")),
+                status,
+                answered_at:
+                    status === "answered" || status === "published"
+                        ? now
+                        : null,
+                published_at: status === "published" ? now : null,
+                updated_at: now,
+            })
+            .eq("id", id);
+        if (error) errorMessage = formError(error);
+        else message = "Question updated.";
+    } else {
+        errorMessage = "Invalid question action.";
+    }
+}
+
+const requestedStatus = Astro.url.searchParams.get("status");
+
+let query = supabase
+    .from("questions")
+    .select("*")
+    .order("submitted_at", { ascending: false });
+if (
+    ["pending", "answered", "published", "rejected"].includes(
+        requestedStatus || "",
+    )
+)
+    query = query.eq("status", requestedStatus);
+const { data: questions, error } = await query;
+if (error && !errorMessage) errorMessage = formError(error);
+
+const statusFilters = [
+    { value: "", label: "All questions" },
+    { value: "pending", label: "Pending" },
+    { value: "answered", label: "Answered" },
+    { value: "published", label: "Published" },
+    { value: "rejected", label: "Rejected" },
+];
+
+const statusLabels = {
+    pending: "Needs a reply",
+    answered: "Answered",
+    published: "Published",
+    rejected: "Rejected",
+};
+
+const statusClass = (status) => `question-status question-status--${status}`;
+
+---
+
+<AdminLayout title="Questions" userEmail={user.email}>
+    <h1>Answer questions</h1>
+    {message && <p class="admin-notice admin-notice--success" role="status">{message}</p>}
+    {errorMessage && <p class="admin-notice admin-notice--error" role="alert">{errorMessage}</p>}
+
+    <section class="question-toolbar" aria-label="Question filters">
+        <div>
+            <p class="toolbar-label">Show</p>
+            <nav class="filter-tabs">
+                {statusFilters.map((filter) => (
+                    <a
+                        class:list={{ active: (requestedStatus || "") === filter.value }}
+                        href={filter.value ? `/admin/questions?status=${filter.value}` : "/admin/questions"}
+                        aria-current={(requestedStatus || "") === filter.value ? "page" : undefined}
+                    >
+                        {filter.label}
+                    </a>
+                ))}
+            </nav>
+        </div>
+        <p class="question-count">
+            <strong>{questions?.length ?? 0}</strong>
+            {questions?.length === 1 ? " question" : " questions"}
+        </p>
+    </section>
+
+    {
+        questions?.length ? (
+            <div class="question-list">
+                {questions.map((question) => (
+                    <article class="question-card">
+                        <div class="question-card-header">
+                            <div>
+                                <p class="question-author">
+                                    {question.visitor_name || "Anonymous visitor"}
+                                    {question.visitor_email && <span> · {question.visitor_email}</span>}
+                                </p>
+                                <p class="question-date">
+                                    Submitted {new Date(question.submitted_at).toLocaleString([], {
+                                        dateStyle: "medium",
+                                        timeStyle: "short",
+                                    })}
+                                </p>
+                            </div>
+                            <span class={statusClass(question.status)}>{statusLabels[question.status] || question.status}</span>
+                        </div>
+
+                        <div class="question-copy">
+                            <p class="field-label">Question</p>
+                            <p class="question-text">{question.question_text}</p>
+                        </div>
+
+                        <form class="answer-form" method="post" action="/admin/questions">
+                            <input type="hidden" name="action" value="update" />
+                            <input
+                                type="hidden"
+                                name="id"
+                                value={question.id}
+                            />
+                            <label class="field-label" for={`answer-text-${question.id}`}>Your answer</label>
+                            <textarea
+                                id={`answer-text-${question.id}`}
+                                name="answer_text"
+                                rows="5"
+                                placeholder="Write a helpful response..."
+                            >
+                                {question.answer_text ?? ""}
+                            </textarea>
+                            <div class="answer-form-footer">
+                                <label class="status-field" for={`status-${question.id}`}>
+                                    <span class="field-label">Visibility</span>
+                                    <select id={`status-${question.id}`} name="status">
+                                {[
+                                    "pending",
+                                    "answered",
+                                    "published",
+                                    "rejected",
+                                ].map((status) => (
+                                    <option
+                                        value={status}
+                                        selected={question.status === status}
+                                    >
+                                        {status}
+                                    </option>
+                                ))}
+                                    </select>
+                                </label>
+                                <button class="save-button" type="submit">Save response</button>
+                            </div>
+                        </form>
+                        <form class="delete-form" method="post" action="/admin/questions">
+                            <input type="hidden" name="action" value="delete" />
+                            <input
+                                type="hidden"
+                                name="id"
+                                value={question.id}
+                            />
+                            <button type="submit">Delete question</button>
+                        </form>
+                    </article>
+                ))}
+            </div>
+        ) : (
+            <section class="empty-state">
+                <h2>No questions here</h2>
+                <p>There are no questions matching this filter.</p>
+                {requestedStatus && <a href="/admin/questions">View all questions</a>}
+            </section>
+        )
+    }
+</AdminLayout>
+

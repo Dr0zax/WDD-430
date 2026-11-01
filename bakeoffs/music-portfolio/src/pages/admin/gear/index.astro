@@ -1,0 +1,119 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import {
+    asBoolean,
+    clean,
+    formError,
+    requireAdmin,
+} from "../../../lib/admin.js";
+
+const user = await requireAdmin(Astro);
+if (user instanceof Response) return user;
+const supabase = Astro.locals.supabase;
+let message = Astro.url.searchParams.get("message") || "";
+let errorMessage = "";
+if (Astro.request.method === "POST") {
+    const form = await Astro.request.formData();
+    const action = String(form.get("action") || "");
+    if (action === "delete") {
+        const { error } = await supabase
+            .from("gear_entries")
+            .delete()
+            .eq("id", String(form.get("id")));
+        if (error) errorMessage = formError(error);
+        else message = "Gear entry deleted.";
+    } else {
+        const { error } = await supabase.from("gear_entries").insert({
+            name: clean(form.get("name")),
+            slug: clean(form.get("slug")),
+            category: clean(form.get("category")),
+            manufacturer: clean(form.get("manufacturer")),
+            model: clean(form.get("model")),
+            description: clean(form.get("description")),
+            personal_notes: clean(form.get("personal_notes")),
+            image_url: clean(form.get("image_url")),
+            external_url: clean(form.get("external_url")),
+            status: clean(form.get("status")),
+            tags: clean(form.get("tags")),
+            is_featured: asBoolean(form.get("is_featured")),
+            is_published: asBoolean(form.get("is_published")),
+        });
+        if (error) errorMessage = formError(error);
+        else
+            return Astro.redirect(
+                "/admin/gear?message=Gear%20entry%20created.",
+            );
+    }
+}
+const { data: entries, error } = await supabase
+    .from("gear_entries")
+    .select("*")
+    .order("name");
+if (error && !errorMessage) errorMessage = formError(error);
+---
+
+<AdminLayout title="Gear" userEmail={user.email}>
+    <h1>Gear management</h1>
+    {message && <p role="status">{message}</p>}
+    {errorMessage && <p role="alert">{errorMessage}</p>}
+    <p><a href="/admin">Dashboard</a></p>
+    <h2>Add gear entry</h2>
+    <form method="post">
+        <label for="name">Name</label><input id="name" name="name" required />
+        <label for="slug">Slug</label><input id="slug" name="slug" required />
+        <label for="category">Category</label><input
+            id="category"
+            name="category"
+        />
+        <label for="manufacturer">Manufacturer</label><input
+            id="manufacturer"
+            name="manufacturer"
+        />
+        <label for="model">Model</label><input id="model" name="model" />
+        <label for="description">Description</label><textarea
+            id="description"
+            name="description"></textarea>
+        <label for="personal_notes">Personal notes</label><textarea
+            id="personal_notes"
+            name="personal_notes"></textarea>
+        <label for="image_url">Image URL</label><input
+            id="image_url"
+            name="image_url"
+            type="url"
+        />
+        <label for="external_url">Purchase or manufacturer URL</label><input
+            id="external_url"
+            name="external_url"
+            type="url"
+        />
+        <label for="status">Status</label><input
+            id="status"
+            name="status"
+            placeholder="owned, previously owned, wishlist"
+        />
+        <label for="tags">Tags</label><input id="tags" name="tags" />
+        <label><input name="is_featured" type="checkbox" /> Featured</label>
+        <label><input name="is_published" type="checkbox" /> Published</label>
+        <button type="submit">Create gear entry</button>
+    </form>
+    <h2>Existing entries</h2>
+    {
+        entries?.length ? (
+            <ul>
+                {entries.map((entry) => (
+                    <li>
+                        <a href={`/admin/gear/${entry.id}`}>{entry.name}</a>
+                        {entry.is_published ? " (published)" : " (draft)"}
+                        <form method="post">
+                            <input type="hidden" name="action" value="delete" />
+                            <input type="hidden" name="id" value={entry.id} />
+                            <button type="submit">Delete</button>
+                        </form>
+                    </li>
+                ))}
+            </ul>
+        ) : (
+            <p>No gear entries yet.</p>
+        )
+    }
+</AdminLayout>

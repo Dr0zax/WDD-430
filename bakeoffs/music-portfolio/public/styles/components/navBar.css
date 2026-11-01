@@ -1,31 +1,94 @@
-nav {
-    width: 100%;
+.site-nav {
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin: 0 auto;
+    padding: 1.25rem;
+}
 
-    ul {
-        padding: 1rem;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-    }
+.home-page .site-nav {
+    position: absolute;
+}
 
-    li {
-        list-style: none;
-    }
+body:not(.home-page) .site-nav {
+    background: url("/images/hero-banner.jpg") center / cover;;
+}
 
-    a {
-        background-color: none;
-        padding: var(--space-sm);
-        border-radius: var(--radius-sm);
-        border: 1px solid var(--color-primary);
-        color: var(--color-text-light);
-        backdrop-filter: blur(8px) saturate(80%);
-        transition: background-color 250ms ease, color 250ms;
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-right: auto;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+
+    img {
+        width: 50px;
+        transition: transform 1s ease;
 
         &:hover {
-            background-color: var(--color-primary);
-            color: black;
+            transform: rotate(360deg);
         }
+    }
+}
+
+.site-nav ul {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    list-style: none;
+}
+
+.site-nav a {
+    border-radius: 999px;
+    transition: background-color var(--transition-base), color var(--transition-base), transform var(--transition-base);
+}
+
+.site-nav ul a {
+    padding: 0.55rem 0.85rem;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+.site-nav ul a:hover,
+.site-nav ul a.active {
+    background: var(--color-surface-soft);
+    color: var(--color-text);
+}
+
+.nav-cta {
+    padding: 0.65rem 1rem;
+    background: var(--color-accent);
+    color: var(--color-bg);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.nav-cta:hover {
+    background: var(--color-accent-hover);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 700px) {
+    .brand {
+        display: none;
+    }
+    
+    .site-nav {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .site-nav ul {
+        order: 3;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .site-nav ul a {
+        padding-inline: 0.5rem;
     }
 }

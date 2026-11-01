@@ -1,0 +1,41 @@
+#gear-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-lg);
+    margin-top: var(--space-md);
+}
+
+#gear-list article {
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+}
+
+#gear-list article > img,
+.gear-placeholder {
+    display: grid;
+    width: 100%;
+    height: clamp(12rem, 24vw, 18rem);
+    aspect-ratio: 1 / 1;
+    place-items: center;
+    object-fit: cover;
+}
+
+.gear-placeholder {
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--color-primary-strong), #2d2552);
+    color: var(--color-text-light);
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+#gear-list article h3,
+#gear-list article p {
+    margin-top: 0;
+}
+
+.gear-meta,
+.gear-status {
+    color: var(--color-text-muted);
+}

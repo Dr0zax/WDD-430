@@ -1,9 +1,39 @@
 ---
-const { title, release_date, description } = Astro.props;
+const {
+    title,
+    release_date,
+    description,
+    cover_image_url,
+    release_type,
+    genre,
+    embed_url
+} = Astro.props;
+
+const formattedDate = release_date
+    ? new Intl.DateTimeFormat("en", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+      }).format(new Date(`${release_date}T00:00:00`))
+    : "Release date unavailable";
 ---
 
-<div>
-    <h3>{title} - {release_date}</h3>
-    <p>{description}</p>
-    <!-- <img src=`${cover_image_url}` alt=""> -->
-</div>
+<article class="featured-release-card">
+    <div class="featured-release-art">
+        <img
+            src={cover_image_url || "/images/release-placeholder.jpg"}
+            alt={cover_image_url ? `Cover artwork for ${title}` : "Release artwork placeholder"}
+        />
+        <span class="featured-release-ribbon">Featured</span>
+    </div>
+    <div class="featured-release-copy">
+        <h3>{title || "Untitled release"}</h3>
+        <p class="featured-release-meta">
+            {formattedDate}
+            {release_type && ` · ${release_type}`}
+            {genre && ` · ${genre}`}
+        </p>
+        {description && <p class="featured-release-description">{description}</p>}
+        {embed_url && <a href={embed_url}>Listen to {title}</a>}
+    </div>
+</article>

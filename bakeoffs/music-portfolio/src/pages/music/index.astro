@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { createServerClient } from '../../db/supabase.js';
+import { attachCoverArt } from '../../lib/cover-art.js';
 
 const search = Astro.url.searchParams.get('search')?.trim() ?? '';
 const releaseType = Astro.url.searchParams.get('release_type')?.trim() ?? '';
@@ -11,7 +12,7 @@ let errorMessage = '';
 
 let releasesQuery = createServerClient()
     .from('music_entries')
-    .select('id, title, slug, release_type, release_date, description, cover_image_url, genre, external_links, embed_url')
+    .select('id, title, slug, release_type, release_date, description, cover_image_url, genre, embed_url')
     .eq('is_published', true);
 
 if (releaseType) {
@@ -35,7 +36,7 @@ if (sort === 'title') {
 
 const { data, error } = await releasesQuery;
 if (error) errorMessage = 'Releases are temporarily unavailable.';
-else releases = data ?? [];
+else releases = await attachCoverArt(createServerClient(), data ?? []);
 
 const formatDate = (date) =>
     date
@@ -88,16 +89,18 @@ const formatDate = (date) =>
                         src={release.cover_image_url || '/images/release-placeholder.jpg'}
                         alt={release.cover_image_url ? `Cover artwork for ${release.title}` : 'Cover artwork placeholder'}
                     />
-                    <h3>{release.title}</h3>
-                    <p>
-                        <time datetime={release.release_date ?? undefined}>
-                            {formatDate(release.release_date)}
-                        </time>
-                        {release.release_type && ` · ${release.release_type}`}
-                        {release.genre && ` · ${release.genre}`}
-                    </p>
-                    {release.description && <p>{release.description}</p>}
-                    {release.embed_url && <a href={release.embed_url}>Listen to {release.title}</a>}
+                    <div>
+                        <h3>{release.title}</h3>
+                        <p>
+                            <time datetime={release.release_date ?? undefined}>
+                                {formatDate(release.release_date)}
+                            </time>
+                            {release.release_type && ` · ${release.release_type}`}
+                            {release.genre && ` · ${release.genre}`}
+                        </p>
+                        {release.description && <p>{release.description}</p>}
+                        {release.embed_url && <a href={release.embed_url}>Listen to {release.title}</a>}
+                    </div>
                 </article>
             )) : !errorMessage && <p>No published releases match your search.</p>}
         </div>

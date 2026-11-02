@@ -2,9 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import FeaturedRelease from '../components/FeaturedRelease.astro';
 import { createServerClient } from '../db/supabase';
+import { attachCoverArt } from '../lib/cover-art.js';
 
 const supabase = createServerClient();
-const { data: featured_release, error } = await supabase.from("music_entries").select().eq("is_featured", true);
+const { data: featuredReleases, error } = await supabase.from("music_entries").select().eq("is_featured", true);
+const featured_release = await attachCoverArt(supabase, featuredReleases ?? []);
 ---
 
 <Layout title="Drozax Music">

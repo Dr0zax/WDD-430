@@ -12,6 +12,14 @@ if (user instanceof Response) return user;
 const supabase = Astro.locals.supabase;
 let message = Astro.url.searchParams.get("message") || "";
 let errorMessage = "";
+const COVER_ART_BUCKET = "cover art";
+const COVER_ART_TYPES = new Map([
+    ["image/avif", "avif"],
+    ["image/gif", "gif"],
+    ["image/jpeg", "jpg"],
+    ["image/png", "png"],
+    ["image/webp", "webp"],
+]);
 
 if (Astro.request.method === "POST") {
     const form = await Astro.request.formData();
@@ -24,26 +32,66 @@ if (Astro.request.method === "POST") {
         if (error) errorMessage = formError(error);
         else message = "Music entry deleted.";
     } else if (action === "create") {
-        const { error } = await supabase.from("music_entries").insert({
-            title: clean(form.get("title")),
-            slug: clean(form.get("slug")),
-            release_type: clean(form.get("release_type")),
-            release_date: clean(form.get("release_date")),
-            description: clean(form.get("description")),
-            cover_image_url: clean(form.get("cover_image_url")),
-            genre: clean(form.get("genre")),
-            credits: clean(form.get("credits")),
-            track_listing: clean(form.get("track_listing")),
-            external_links: clean(form.get("external_links")),
-            embed_url: clean(form.get("embed_url")),
-            is_featured: asBoolean(form.get("is_featured")),
-            is_published: asBoolean(form.get("is_published")),
-        });
-        if (error) errorMessage = formError(error);
-        else
-            return Astro.redirect(
-                "/admin/music?message=Music%20entry%20created.",
-            );
+        const title = clean(form.get("title"));
+        const slug = clean(form.get("slug"));
+        const coverArt = form.get("cover_art");
+        let coverImageUrl = clean(form.get("cover_image_url"));
+        let uploadedCoverPath = null;
+
+        if (coverArt && typeof coverArt.arrayBuffer === "function" && coverArt.size > 0) {
+            const extension = COVER_ART_TYPES.get(coverArt.type);
+            if (!extension) {
+                errorMessage = "Cover art must be an AVIF, GIF, JPEG, PNG, or WebP image.";
+            } else if (!slug) {
+                errorMessage = "A release slug is required before uploading cover art.";
+            } else {
+                uploadedCoverPath = `${slug}.${extension}`;
+                const { error: uploadError } = await supabase.storage
+                    .from(COVER_ART_BUCKET)
+                    .upload(uploadedCoverPath, new Uint8Array(await coverArt.arrayBuffer()), {
+                        cacheControl: "3600",
+                        contentType: coverArt.type,
+                        upsert: true,
+                    });
+
+                if (uploadError) {
+                    uploadedCoverPath = null;
+                    errorMessage = `Cover art upload failed: ${formError(uploadError)}`;
+                } else {
+                    const { data } = supabase.storage
+                        .from(COVER_ART_BUCKET)
+                        .getPublicUrl(uploadedCoverPath);
+                    coverImageUrl = data.publicUrl;
+                }
+            }
+        }
+
+        if (!errorMessage) {
+            const { error } = await supabase.from("music_entries").insert({
+                title,
+                slug,
+                release_type: clean(form.get("release_type")),
+                release_date: clean(form.get("release_date")),
+                description: clean(form.get("description")),
+                cover_image_url: coverImageUrl,
+                genre: clean(form.get("genre")),
+                credits: clean(form.get("credits")),
+                track_listing: clean(form.get("track_listing")),
+                embed_url: clean(form.get("embed_url")),
+                is_featured: asBoolean(form.get("is_featured")),
+                is_published: asBoolean(form.get("is_published")),
+            });
+            if (error) {
+                if (uploadedCoverPath) {
+                    await supabase.storage.from(COVER_ART_BUCKET).remove([uploadedCoverPath]);
+                }
+                errorMessage = formError(error);
+            } else {
+                return Astro.redirect(
+                    "/admin/music?message=Music%20entry%20created.",
+                );
+            }
+        }
     }
 }
 
@@ -69,7 +117,7 @@ const formatDate = (date) =>
     {errorMessage && <p role="alert">{errorMessage}</p>}
     <p><a href="/admin">Dashboard</a></p>
     <h2>Add music entry</h2>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="action" value="create" />
         <label for="title">Title</label><input
             id="title"
@@ -99,7 +147,14 @@ const formatDate = (date) =>
         <label for="description">Description</label><textarea
             id="description"
             name="description"></textarea>
-        <label for="cover_image_url">Cover image URL</label><input
+        <label for="cover_art">Cover art</label><input
+            id="cover_art"
+            name="cover_art"
+            type="file"
+            accept="image/avif,image/gif,image/jpeg,image/png,image/webp"
+        />
+        <small>Uploaded as slug.extension in the “cover art” bucket.</small>
+        <label for="cover_image_url">Or cover image URL</label><input
             id="cover_image_url"
             name="cover_image_url"
             type="url"
@@ -111,12 +166,6 @@ const formatDate = (date) =>
         <label for="credits">Credits</label><textarea
             id="credits"
             name="credits"></textarea>
-        <label for="track_listing">Track listing</label><textarea
-            id="track_listing"
-            name="track_listing"></textarea>
-        <label for="external_links">External links</label><textarea
-            id="external_links"
-            name="external_links"></textarea>
         <label for="embed_url">Embed URL</label><input
             id="embed_url"
             name="embed_url"

@@ -64,13 +64,6 @@ else gear = data ?? [];
         <div id="gear-list">
             {gear.length ? gear.map((item) => (
                 <article>
-                    {item.image_url ? (
-                        <img src={item.image_url} alt={`Photo of ${item.name}`} />
-                    ) : (
-                        <div class="gear-placeholder" aria-hidden="true">
-                            {item.name?.slice(0, 1).toUpperCase() || 'G'}
-                        </div>
-                    )}
                     <h3>{item.name}</h3>
                     <p class="gear-meta">
                         {item.category || 'Gear'}

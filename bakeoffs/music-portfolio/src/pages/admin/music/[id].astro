@@ -46,7 +46,6 @@ if (Astro.request.method === "POST" && entry) {
                 genre: clean(form.get("genre")),
                 credits: clean(form.get("credits")),
                 track_listing: clean(form.get("track_listing")),
-                external_links: clean(form.get("external_links")),
                 embed_url: clean(form.get("embed_url")),
                 is_featured: asBoolean(form.get("is_featured")),
                 is_published: asBoolean(form.get("is_published")),
@@ -127,18 +126,6 @@ if (Astro.request.method === "POST" && entry) {
                     <label for="credits">Credits</label>
                     <textarea id="credits" name="credits">
                         {entry.credits ?? ""}
-                    </textarea>
-                </>
-                <>
-                    <label for="track_listing">Track listing</label>
-                    <textarea id="track_listing" name="track_listing">
-                        {entry.track_listing ?? ""}
-                    </textarea>
-                </>
-                <>
-                    <label for="external_links">External links</label>
-                    <textarea id="external_links" name="external_links">
-                        {entry.external_links ?? ""}
                     </textarea>
                 </>
                 <>

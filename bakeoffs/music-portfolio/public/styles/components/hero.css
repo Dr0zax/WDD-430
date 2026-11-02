@@ -4,7 +4,7 @@
     justify-content: center;
     min-height: min(60vh, 37rem);
     padding: clamp(2rem, 6vw, 5rem);
-    width: 100vw;
+    width: 100%;
     background: url("/images/hero-banner.jpg") center / cover;
     box-shadow: var(--shadow-card);
 }

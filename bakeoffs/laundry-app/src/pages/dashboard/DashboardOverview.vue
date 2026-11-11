@@ -1,0 +1,5 @@
+<script setup lang="ts">
+import { reservations, machines } from '../../data/demo'
+import ScheduleList from '../../components/ScheduleList.vue'
+</script>
+<template><div class="page-stack"><div class="stat-grid"><div class="stat-card"><span class="eyebrow">Upcoming</span><strong>2</strong><span>reservations</span></div><div class="stat-card"><span class="eyebrow">Available now</span><strong>{{ machines.filter(m => m.status === 'available').length }}</strong><span>machines</span></div><div class="stat-card"><span class="eyebrow">Next opening</span><strong>10:25</strong><span>this morning</span></div></div><div class="section-heading"><div><span class="eyebrow">Your schedule</span><h2>Upcoming reservations</h2></div></div><ScheduleList :reservations="reservations.slice(0, 2)" /><div class="callout"><span class="hero__note-mark">✦</span><div><strong>Need a machine soon?</strong><p>There are open slots throughout the afternoon.</p></div><RouterLink class="text-link" to="/dashboard/reservations/new">Find a time →</RouterLink></div></div></template>

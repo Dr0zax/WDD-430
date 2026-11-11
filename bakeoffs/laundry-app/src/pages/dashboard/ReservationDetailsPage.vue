@@ -1,0 +1,1 @@
+<template><div class="detail-card"><span class="eyebrow">Reservation details</span><h2>Washer 02</h2><p class="detail-time">Today · 12:30 PM – 1:15 PM</p><span class="badge badge--success">Confirmed</span><div class="detail-actions"><button class="button button--dark">Edit reservation</button><button class="button button--ghost">Cancel reservation</button></div></div></template>

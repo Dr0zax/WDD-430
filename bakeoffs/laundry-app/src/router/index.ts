@@ -12,7 +12,7 @@ import AdminOverview from '../pages/admin/AdminOverview.vue'
 import AdminReservationsPage from '../pages/admin/AdminReservationsPage.vue'
 import AdminMachinesPage from '../pages/admin/AdminMachinesPage.vue'
 import AdminUsersPage from '../pages/admin/AdminUsersPage.vue'
-import { supabase } from '../lib/supabase'
+import { api } from '../services/api'
 
 export const routes: RouteRecordRaw[] = [{ path: '/', component: AppShell, children: [
   { path: '', component: LandingPage },
@@ -27,13 +27,18 @@ export const routes: RouteRecordRaw[] = [{ path: '/', component: AppShell, child
 ]}]
 
 export async function accessGuard(to: RouteLocationNormalized) {
-  const supabaseSession = supabase ? (await supabase.auth.getSession()).data.session : null
-  const session = supabaseSession ?? localStorage.getItem('washboard-session')
-  const role = localStorage.getItem('washboard-role')
   const protectedRoute = to.matched.find((record) => record.meta.requiresAuth)
 
   if (!protectedRoute) return true
-  if (!session) return { path: '/login', query: { redirect: to.fullPath } }
-  if (protectedRoute.meta.role && protectedRoute.meta.role !== role && role !== 'admin') return { path: '/dashboard' }
+  try {
+    const session = (await api.auth.session()).data.session
+    if (!session) return { path: '/login', query: { redirect: to.fullPath } }
+    if (protectedRoute.meta.role) {
+      const profile = await api.users.get(session.user.id)
+      if (protectedRoute.meta.role !== profile.role && profile.role !== 'admin') return { path: '/dashboard' }
+    }
+  } catch {
+    return { path: '/login', query: { redirect: to.fullPath } }
+  }
   return true
 }

@@ -22,7 +22,7 @@ The app uses `@supabase/supabase-js` for browser authentication and database acc
 
 Apply `supabase/migrations/20261111000000_washboard.sql` with the Supabase CLI or SQL editor. It creates profiles, machines, reservations, reservation-overlap protection, the auth profile trigger, and Row Level Security policies.
 
-When the Supabase variables are absent, the UI remains available in demo mode; database calls fail with a clear configuration message rather than silently writing elsewhere.
+Supabase is required for authentication and resident/admin workspaces. The client fails with a clear configuration message when the public project variables are missing; it never falls back to a fake session or writes demo data.
 
 ## Planned architecture
 

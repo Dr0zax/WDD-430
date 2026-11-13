@@ -380,6 +380,14 @@
     color: var(--color-muted);
     font-size: 0.78rem;
 }
+
+.text-link--button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
 .app-page {
     padding-block: 62px 100px;
 }

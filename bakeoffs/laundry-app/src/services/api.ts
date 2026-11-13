@@ -23,6 +23,7 @@ export const api = {
       return { user: await api.users.get(data.user.id), token: data.session?.access_token ?? '' }
     },
     logout: async () => { const { error } = await requireSupabase().auth.signOut(); throwIfError(error) },
+    resetPassword: async (email: string) => { const { error } = await requireSupabase().auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/login` }); throwIfError(error) },
     me: async () => { const { data, error } = await requireSupabase().auth.getUser(); throwIfError(error); if (!data.user) throw new Error('No active session'); return api.users.get(data.user.id) },
     session: () => requireSupabase().auth.getSession(),
     onAuthStateChange: (callback: (event: AuthChangeEvent, session: Session | null) => void) => requireSupabase().auth.onAuthStateChange(callback),

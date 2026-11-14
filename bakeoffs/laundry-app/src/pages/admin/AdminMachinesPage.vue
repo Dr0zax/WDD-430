@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { api } from '../../services/api'
-import type { Machine } from '../../types/domain'
+import type { Machine, MachineType } from '../../types/domain'
 import MachineCard from '../../components/MachineCard.vue'
-const machines = ref<Machine[]>([]); const errorMessage = ref('')
-onMounted(async () => { try { machines.value = await api.machines.list() } catch (error) { errorMessage.value = error instanceof Error ? error.message : 'Unable to load machines.' } })
+const machines = ref<Machine[]>([]); const errorMessage = ref(''); const showForm = ref(false); const name = ref(''); const type = ref<MachineType>('washer'); const location = ref('Laundry room')
+async function load() { try { machines.value = await api.machines.list() } catch (error) { errorMessage.value = error instanceof Error ? error.message : 'Unable to load machines.' } }
+onMounted(load)
+async function addMachine() { try { const machine = await api.machines.create({ name: name.value, type: type.value, status: 'available', location: location.value }); machines.value.push(machine); name.value = ''; showForm.value = false } catch (error) { errorMessage.value = error instanceof Error ? error.message : 'Unable to add machine.' } }
+async function setStatus(machine: Machine, status: Machine['status']) { try { Object.assign(machine, await api.machines.update(machine.id, { status })) } catch (error) { errorMessage.value = error instanceof Error ? error.message : 'Unable to update machine.' } }
+async function remove(machine: Machine) { if (!window.confirm(`Remove ${machine.name}?`)) return; try { await api.machines.remove(machine.id); machines.value = machines.value.filter((item) => item.id !== machine.id) } catch (error) { errorMessage.value = error instanceof Error ? error.message : 'Unable to remove machine.' } }
 </script>
-<template><div class="page-stack"><div class="section-heading"><div><span class="eyebrow">Operations</span><h2>Manage machines</h2></div><button class="button button--accent">＋ Add machine</button></div><p v-if="errorMessage" class="form-error">{{ errorMessage }}</p><div class="machine-grid"><MachineCard v-for="machine in machines" :key="machine.id" :machine="machine" /></div></div></template>
+<template><div class="page-stack"><div class="section-heading"><div><span class="eyebrow">Operations</span><h2>Manage machines</h2></div><button class="button button--accent" @click="showForm = !showForm">＋ Add machine</button></div><form v-if="showForm" class="filter-bar" @submit.prevent="addMachine"><input v-model="name" placeholder="Machine name" required /><select v-model="type"><option value="washer">Washer</option><option value="dryer">Dryer</option></select><input v-model="location" placeholder="Location" /><button class="button button--dark">Save</button></form><p v-if="errorMessage" class="form-error">{{ errorMessage }}</p><div class="machine-grid"><article v-for="machine in machines" :key="machine.id"><MachineCard :machine="machine" /><div class="detail-actions"><button class="button button--ghost" @click="setStatus(machine, machine.status === 'maintenance' ? 'available' : 'maintenance')">{{ machine.status === 'maintenance' ? 'Mark available' : 'Maintenance' }}</button><button class="button button--ghost" @click="setStatus(machine, 'available')">Available</button><button class="button button--ghost" @click="remove(machine)">Remove</button></div></article></div></div></template>

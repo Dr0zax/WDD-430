@@ -18,7 +18,7 @@ export const routes: RouteRecordRaw[] = [{ path: '/', component: AppShell, child
   { path: '', component: LandingPage },
   { path: 'login', component: LoginPage },
   { path: 'dashboard', component: DashboardLayout, meta: { requiresAuth: true, role: 'resident' }, children: [
-    { path: '', component: DashboardOverview }, { path: 'reservations/new', component: NewReservationPage }, { path: 'reservations/:id', component: ReservationDetailsPage }, { path: 'settings', component: SettingsPage },
+    { path: '', component: DashboardOverview }, { path: 'reservations/new', component: NewReservationPage }, { path: 'reservations/:id/edit', component: NewReservationPage }, { path: 'reservations/:id', component: ReservationDetailsPage }, { path: 'settings', component: SettingsPage },
   ] },
   { path: 'admin', component: AdminLayout, meta: { requiresAuth: true, role: 'admin' }, children: [
     { path: '', component: AdminOverview }, { path: 'reservations', component: AdminReservationsPage }, { path: 'machines', component: AdminMachinesPage }, { path: 'users', component: AdminUsersPage },

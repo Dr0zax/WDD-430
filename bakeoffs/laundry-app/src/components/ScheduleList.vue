@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Reservation } from '../types/domain'
-defineProps<{ reservations: Reservation[]; admin?: boolean }>()
+defineProps<{ reservations: Reservation[]; admin?: boolean; links?: boolean }>()
 function formatTime(value: string) {
   if (value.includes(' · ')) return value.split(' · ')[1]
   const date = new Date(value)
@@ -14,13 +14,13 @@ function formatDay(value: string) {
 </script>
 <template>
   <div class="schedule-list">
-    <div v-for="reservation in reservations" :key="reservation.id" class="schedule-row">
+    <RouterLink v-for="reservation in reservations" :key="reservation.id" :to="`/dashboard/reservations/${reservation.id}`" class="schedule-row" :class="{ 'schedule-row--link': links }" @click="!links && $event.preventDefault()">
       <div class="schedule-time"><strong>{{ formatTime(reservation.start) }}</strong><span>{{ formatTime(reservation.end) }}</span></div>
       <div class="schedule-machine"><span class="machine-icon" :class="`machine-icon--${reservation.machineType}`">{{
         reservation.machineType === 'washer' ? 'W' : 'D' }}</span><span><strong>{{ reservation.machineName
             }}</strong><small>{{ reservation.userName }} · {{ formatDay(reservation.start) }}</small></span>
       </div>
       <span class="badge badge--success">{{ reservation.status }}</span>
-    </div>
+    </RouterLink>
   </div>
 </template>
